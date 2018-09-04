@@ -6,7 +6,7 @@
   <h3 align="center">Footprint</h3>
 
   <p align="center">
-    <sub>First of all, hacked by <a href="https://github.com/gyyyy/"><code>gyyyy</code></a>@<a href="https://github.com/CarefreeTech/"><code>CarefreeTech</code></a> ( and <a href="http://lab.tass.com.cn/"><code>TASS-LiehuLab</code></a> ).</sub>
+    <sub>hacked by <a href="https://github.com/gyyyy/"><code>gyyyy</code></a>@<a href="https://github.com/CarefreeTech/"><code>CarefreeTech</code></a> ( and @<a href="http://lab.tass.com.cn/"><code>TASS-LiehuLab</code></a> ).</sub>
   </p>
 </p>
 
