@@ -1,5 +1,5 @@
 ---
-title: 使用Python检测和绕过WAF [译]
+title: 使用Python检测和绕过WAF <译>
 date: 2017-06-24 23:58:15
 tags: [web, python, bypass, waf]
 ---
