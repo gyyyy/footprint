@@ -1,31 +1,33 @@
----
-title: Java RCE分析（一）
-date: 2017-08-01 00:00:00
-tags: [java, rce]
----
+# Java RCE分析（一）
+
+![Category](https://img.shields.io/badge/category-security_research-blue.svg)
+![Research](https://img.shields.io/badge/research-web_security-blue.svg)
+![Language](https://img.shields.io/badge/lang-java-blue.svg)
+![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
+![Progress](https://img.shields.io/badge/progress-5%25-red.svg)
 
 <small>* 本文是去年底就准备写的，结果后来忙忘了。前段时间的[S2-048](https://struts.apache.org/docs/s2-048.html)让Java RCE又一次出现在公众的视野，于是趁热打铁。另，笔者水平实在有限，有什么不恰当或不正确的观点言论，请不吝赐教。</small>
 
 介绍什么是Java什么是RCE的那些长篇大论我们就免了，又不是为了写本书凑字数，直接来看看Java中常见的可以导致RCE的场景：
 
-* 可解析表达式
-* 反序列化
-* 反射
-* 相关业务功能
+- 可解析表达式
+- 反序列化
+- 反射
+- 相关业务功能
 
-### 可解析表达式
+## 可解析表达式
 
 > 管中窥豹：千疮百孔的Struts2，与它最爱的OGNL表达式
 
-Struts2历年来的RCE还算是挺『[丰富](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)』的，不算黑，毕竟是曾经的经典，漏洞应该促使其概念革新技术进步，只让我们稍作整理*（由于篇幅原因，关于漏洞描述和一些其他介绍性的信息本文就直接忽略了，有兴趣的可以超链接到官方查阅）*。
+Struts2历年来的RCE还算是挺『[丰富](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)』的，不算黑，毕竟是曾经的经典，漏洞应该促使其概念革新技术进步，只让我们稍作整理 *（由于篇幅原因，关于漏洞描述和一些其他介绍性的信息本文就直接忽略了，有兴趣的可以超链接到官方查阅）*。
 
-#### **[S2-001](https://cwiki.apache.org/confluence/display/WW/S2-001)**
+### [S2-001](https://cwiki.apache.org/confluence/display/WW/S2-001)
 
 触发条件
 
 1. Struts 2.0.0 - 2.0.8 && XWork <= 2.0.3
-2. 启用altSyntax*（默认）*
-3. 受影响参数数据回显
+1. 启用altSyntax *（默认）*
+1. 受影响参数数据回显
 n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 作用域
@@ -38,7 +40,7 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
     [ PoC样本 ]
         %{@java.lang.Runtime@getRuntime().exec('calc')}
-    
+
     [ 关键调用栈 ]
         -> org.apache.struts2.components.UIBean.evaluateParams()
         -> org.apache.struts2.components.Component.findString()
@@ -51,7 +53,7 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 1. 用`%{}`包裹的参数值以普通字符串形式压入ValueStack，在`TransformControl.afterBody()`阶段执行`UIBean.evaluateParams()`流程时被再次以`%{}`包裹进行解析，由于低版本XWork2的OGNL递归解析到内层`%{}`，造成RCE
 
-#### **[S2-003](https://cwiki.apache.org/confluence/display/WW/S2-003)**
+### [S2-003](https://cwiki.apache.org/confluence/display/WW/S2-003)
 
 触发条件
 
@@ -72,9 +74,9 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 1. 由于Struts2对`#`等特殊字符做了限制，因此使用了OGNL中`(one)(two)`之类的表达式求值模型绕过
 
-#### **[S2-005](https://cwiki.apache.org/confluence/display/WW/S2-005)<small>*（S2-003修复绕过）*</small>**
+### [S2-005](https://cwiki.apache.org/confluence/display/WW/S2-005) *（S2-003修复绕过）*
 
-*>> 已完成复现+跟踪调试*
+*（>> 已完成复现+跟踪调试）*
 
 触发条件
 
@@ -92,7 +94,7 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
         ?('\u0023_memberAccess[\'allowStaticMethodAccess\']')(vaaa)=true
         &(aaaa)(('\u0023context[\'xwork.MethodAccessor.denyMethodExecution\']\u003d\u0023vccc')(\u0023vccc\u003dfalse))
         &(asdf)(('\u0023rt.exec(\'calc\')')(\u0023rt\u003d@java.lang.Runtime@getRuntime()))=1
-    
+
     [ 关键调用栈 ]
         -> org.apache.struts2.dispatcher.Dispatcher.serviceAction()
         -> org.apache.struts2.impl.StrutsActionProxy.execute()
@@ -105,29 +107,29 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 表达式
 
-* 最终解析：Raw
-* 抽象模型：(1)(2)+(1)((2)(3))
+- 最终解析：Raw
+- 抽象模型：(1)(2)+(1)((2)(3))
 
 特点
 
 1. 控制`denyMethodExecution=false`和`allowStaticMethodAccess=true`绕过安全限制
 
-#### [S2-007](https://cwiki.apache.org/confluence/display/WW/S2-007)
+### [S2-007](https://cwiki.apache.org/confluence/display/WW/S2-007)
 
 触发条件
 
 1. Struts 2.0.0 - 2.2.3
 
-#### [#S2-008](https://cwiki.apache.org/confluence/display/WW/S2-008)
+### [#S2-008](https://cwiki.apache.org/confluence/display/WW/S2-008)
 
 触发条件
 
 1. Struts 2.1.0 - 2.3.1
-2. 启用DevMode
+1. 启用DevMode
 
 作用域
 
-1. 任意action*（struts-default.xml -> DebuggingInterceptor）*
+1. 任意action *（struts-default.xml -> DebuggingInterceptor）*
 
 底层G点
 
@@ -142,13 +144,13 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
         -> org.apache.struts2.interceptor.debugging.DebuggingInterceptor.intercept()
         -> com.opensymphony.xwork2.util.OgnlValueStack.findValue()
         -> com.opensymphony.xwork2.ognl.OgnlUtil.getValue()
-    
+
 表达式
 
-* 最终解析：Raw
-* 抽象模型：(1,2)
+- 最终解析：Raw
+- 抽象模型：(1,2)
 
-#### [S2-009](https://cwiki.apache.org/confluence/display/WW/S2-009)*（，S2-005 Fixed-Bypass）*
+### [S2-009](https://cwiki.apache.org/confluence/display/WW/S2-009) *（，S2-005 Fixed-Bypass）*
 
 触发条件
 
@@ -156,7 +158,7 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 作用域
 
-1. 
+1.
 
 底层G点
 
@@ -168,14 +170,14 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 表达式
 
-* 最终解析：
-* 抽象模型：
+- 最终解析：
+- 抽象模型：
 
 S2-012
 S2-013
 S2-014
 
-#### [S2-015](https://cwiki.apache.org/confluence/display/WW/S2-015)
+### [S2-015](https://cwiki.apache.org/confluence/display/WW/S2-015)
 
 触发条件
 
@@ -183,7 +185,7 @@ S2-014
 
 作用域
 
-#### [S2-016](https://cwiki.apache.org/confluence/display/WW/S2-016)
+### [S2-016](https://cwiki.apache.org/confluence/display/WW/S2-016)
 
 触发条件
 
@@ -191,7 +193,7 @@ S2-014
 
 作用域
 
-1. 任意action*（常规的`?redirect:`或`?redirectAction:`形式）*
+1. 任意action *（常规的`?redirect:`或`?redirectAction:`形式）*
 
 底层G点
 
@@ -214,7 +216,7 @@ S2-014
         -> com.opensymphony.xwork2.util.OgnlValueStack.findValue()
         -> com.opensymphony.xwork2.ognl.OgnlUtil.getValue()
 
-#### [S2-019](https://cwiki.apache.org/confluence/display/WW/S2-019)
+### [S2-019](https://cwiki.apache.org/confluence/display/WW/S2-019)
 
 触发条件
 
@@ -222,18 +224,18 @@ S2-014
 
 作用域
 
-#### [S2-027](https://cwiki.apache.org/confluence/display/WW/S2-027)
+### [S2-027](https://cwiki.apache.org/confluence/display/WW/S2-027)
 
 触发条件
 
 1. Struts 2.0.0 - 2.3.16.3
 
-#### [S2-029](https://cwiki.apache.org/confluence/display/WW/S2-029)
+### [S2-029](https://cwiki.apache.org/confluence/display/WW/S2-029)
 
 触发条件
 
-1. Struts 2.0.0 - 2.3.24.1*（Struts 2.3.20.3除外）*
-2. 部分受影响Struts标签*（如`<s:i18n>`）*的name或id属性值可控，且为OGNL表达式*（如`%{name}`）*
+1. Struts 2.0.0 - 2.3.24.1 *（Struts 2.3.20.3除外）*
+1. 部分受影响Struts标签 *（如`<s:i18n>`）* 的name或id属性值可控，且为OGNL表达式 *（如`%{name}`）*
 
 作用域
 
@@ -264,16 +266,16 @@ S2-014
 
 1. 逻辑上的二次解析，与S2-001中的递归解析不同概念
 
-#### [S2-032](https://cwiki.apache.org/confluence/display/WW/S2-032)
+### [S2-032](https://cwiki.apache.org/confluence/display/WW/S2-032)
 
 触发条件
 
-1. Struts 2.3.20 - 2.3.28*（Struts 2.3.20.3和2.3.24.3除外）*
-2. 启用DynamicMethodInvocation*（动态方法调用）*
+1. Struts 2.3.20 - 2.3.28 *（Struts 2.3.20.3和2.3.24.3除外）*
+1. 启用DynamicMethodInvocation *（动态方法调用）*
 
 作用域
 
-1. 任意action method*（改写`!`为`?method:`形式）*
+1. 任意action method *（改写`!`为`?method:`形式）*
 
 底层G点
 
@@ -296,19 +298,19 @@ S2-014
 特点
 
 1. 使用`?method:`形式绕过`!`形式的特殊字符限制
-2. 使用额外请求参数绕过`StringEscapeUtils.escapeEcmaScript()`和`StringEscapeUtils.escapeHtml4()`的特殊字符限制
+1. 使用额外请求参数绕过`StringEscapeUtils.escapeEcmaScript()`和`StringEscapeUtils.escapeHtml4()`的特殊字符限制
 
-#### [S2-033](https://cwiki.apache.org/confluence/display/WW/S2-033)*（S2-032同源）*
+### [S2-033](https://cwiki.apache.org/confluence/display/WW/S2-033) *（S2-032同源）*
 
 触发条件
 
-1. Struts 2.3.20 - 2.3.28*（Struts 2.3.20.3和2.3.24.3除外）*
-2. 启用DynamicMethodInvocation*（动态方法调用）*
-3. 使用struts2-rest-plugin
+1. Struts 2.3.20 - 2.3.28 *（Struts 2.3.20.3和2.3.24.3除外）*
+1. 启用DynamicMethodInvocation *（动态方法调用）*
+1. 使用struts2-rest-plugin
 
 作用域
 
-1. 满足路由条件的action method*（常规的`!`形式）*
+1. 满足路由条件的action method *（常规的`!`形式）*
 
 底层G点
 
@@ -327,22 +329,22 @@ S2-014
         -> com.opensymphony.xwork2.DefaultActionInvocation.invokeAction()
         -> com.opensymphony.xwork2.ognl.OgnlUtil.getValue()
 
-#### [S2-036](https://cwiki.apache.org/confluence/display/WW/S2-036)*（S2-029 Bypass）*
+### [S2-036](https://cwiki.apache.org/confluence/display/WW/S2-036) *（S2-029 Bypass）*
 
 触发条件
 
 1. Struts 2.0.0 - 2.3.28.1
 
-#### [S2-037](https://cwiki.apache.org/confluence/display/WW/S2-037)*（S2-032同源）*
+### [S2-037](https://cwiki.apache.org/confluence/display/WW/S2-037) *（S2-032同源）*
 
 触发条件
 
 1. Struts 2.3.20 - 2.3.28.1
-2. 使用struts2-rest-plugin
+1. 使用struts2-rest-plugin
 
 作用域
 
-1. 满足路由条件的action method*（正常的Restful请求，无视DynamicMethodInvocation）*
+1. 满足路由条件的action method *（正常的Restful请求，无视DynamicMethodInvocation）*
 
 底层G点
 
@@ -362,9 +364,9 @@ S2-014
 
 特点
 
-1. 不需要启用DynamicMethodInvocation*（相对于S2-033的另一个处理分支流程）*
+1. 不需要启用DynamicMethodInvocation *（相对于S2-033的另一个处理分支流程）*
 
-#### [S2-045](https://cwiki.apache.org/confluence/display/WW/S2-045)
+### [S2-045](https://cwiki.apache.org/confluence/display/WW/S2-045)
 
 触发条件
 
@@ -372,7 +374,7 @@ S2-014
 
 作用域
 
-1. 任意action*（全局Dispatcher，优先于Interceptors链）*
+1. 任意action *（全局Dispatcher，优先于Interceptors链）*
 
 底层G点
 
@@ -392,7 +394,7 @@ S2-014
 
 1. 漏洞触发在Struts2本身的Dispatcher层，还处于封装Request的逻辑中，连Interceptor层都还没进
 
-#### [S2-046](https://cwiki.apache.org/confluence/display/WW/S2-046)*（S2-045同源）*
+### [S2-046](https://cwiki.apache.org/confluence/display/WW/S2-046) *（S2-045同源）*
 
 触发条件
 
@@ -400,7 +402,7 @@ S2-014
 
 作用域
 
-1. 任意action*（全局Dispatcher，优先于Interceptors链）*
+1. 任意action *（全局Dispatcher，优先于Interceptors链）*
 
 底层G点
 
@@ -416,7 +418,7 @@ S2-014
         -> com.opensymphony.xwork2.util.OgnlValueStack.findValue()
         -> com.opensymphony.xwork2.ognl.OgnlUtil.getValue()
 
-#### [S2-048](https://cwiki.apache.org/confluence/display/WW/S2-048)
+### [S2-048](https://cwiki.apache.org/confluence/display/WW/S2-048)
 
 触发条件
 
@@ -434,7 +436,7 @@ S2-014
 
     [ PoC样本 ]
         %{(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(@java.lang.Runtime@getRuntime().exec('calc'))}
-    
+
     [ 关键调用栈 ]
         -> org.apache.struts2.s1.Struts1Action.execute()
         -> com.opensymphony.xwork2.ActionSupport.getText()
@@ -445,11 +447,11 @@ S2-014
 
 特点
 
-- 黑盒特征不明显，唯一确认的是ActionMessage/ActionError/FieldError对象一般用于后端向前端传递消息，前端可获取并显示，即很大几率存在数据回显，可用`%{1+1}`类payload测试*（前端`<s:actionmessage>`仅被解析为无特征`<ul><li><span>`组合，不太适合作为判断依据）*
+- 黑盒特征不明显，唯一确认的是ActionMessage/ActionError/FieldError对象一般用于后端向前端传递消息，前端可获取并显示，即很大几率存在数据回显，可用`%{1+1}`类Payload测试 *（前端`<s:actionmessage>`仅被解析为无特征`<ul><li><span>`组合，不太适合作为判断依据）*
 
-#### Struts2安全策略及其绕过方式
+### Struts2安全策略及其绕过方式
 
-#### 分析
+### 分析
 
 根据上述总结的Struts2的历史RCE数据，先做个简单的统计：
 
@@ -457,32 +459,31 @@ S2-014
 
 ...
 
-- 表达式*（抽象模型）*频率
+- 表达式 *（抽象模型）* 频率
 
 ...
 
 可以发现几个共性：
 
-1. 几乎所有OGNL相关漏洞跟踪到底层，都是走到`OgnlUtil.getValue()`或`OgnlUtil.setValue()`中，解析OGNL表达式*（至少在Struts2，或其他基于XWork2的框架中）*
+1. 几乎所有OGNL相关漏洞跟踪到底层，都是走到`OgnlUtil.getValue()`或`OgnlUtil.setValue()`中，解析OGNL表达式 *（至少在Struts2，或其他基于XWork2的框架中）*
 1. 可能出现安全问题的解析方式
-
-    * 直接解析*（含OGNL表达式求值）*
-    * 二次解析*（逻辑多次或递归）*
+    - 直接解析 *（含OGNL表达式求值）*
+    - 二次解析 *（逻辑多次或递归）*
 
 根据上述共性，以及对OGNL源码的深度分析，可以得出关于OGNL的特性：
 
-1. `OgnlUtil.setValue()`和`OgnlUtil.getValue()`都会先对表达式进行编译解析*（`OgnlUtil.compile()`）*
+1. `OgnlUtil.setValue()`和`OgnlUtil.getValue()`都会先对表达式进行编译解析 *（`OgnlUtil.compile()`）*
 
 由此，我们开始向上进行逆向『挖掘』工作，抽象关系树：
 
-`OgnlUtil.getValue()` -> 
+`OgnlUtil.getValue()` ->
 
-### 不是最后的最后
+## 不是最后的最后
 
 除了OGNL，还有EL，以及Spring等其他框架使用的表达式语言，本文暂时先总结了Struts2的OGNL，等以后分析到了其他合适的案例再更新进来。
 
-*由于时间关系，有些漏洞在跟踪分析的时候不是特别细致，有兴趣的可以自己跟踪调试，发现与本文有出入的地方，请与作者联系修正。*
+*（由于时间关系，有些漏洞在跟踪分析的时候不是特别细致，有兴趣的可以自己跟踪调试，发现与本文有出入的地方，请与作者联系修正）*
 
-### 参考
+## 参考
 
 1. [Struts2 Security Bulletins](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)

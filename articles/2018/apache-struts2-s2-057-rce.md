@@ -5,18 +5,16 @@
 ![Language](https://img.shields.io/badge/lang-java-blue.svg)
 ![Vuln Component](https://img.shields.io/badge/vuln_component-struts2-red.svg)
 ![Vuln Type](https://img.shields.io/badge/vuln_type-rce-red.svg)
-![Vuln ID](https://img.shields.io/badge/vuln_id-cve--2018--12345-red.svg)
+![Vuln ID](https://img.shields.io/badge/vuln_id-cve--2018--11776-red.svg)
 ![Tag](https://img.shields.io/badge/tag-ognl-green.svg)
 ![Timestamp](https://img.shields.io/badge/timestamp-1535038420-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-### 漏洞编号
+## 漏洞编号
 
 CVE-2018-11776
 
-&nbsp;
-
-### 补丁分析
+## 补丁分析
 
 在github上进行Tag对比。
 
@@ -26,9 +24,7 @@ CVE-2018-11776
 
 ![02.png](apache-struts2-s2-057-rce/02.png)
 
-&nbsp;
-
-### 环境搭建
+## 环境搭建
 
 根据漏洞作者的博客描述，直接使用Struts2-2.3.34的showcase项目，修改struts-actionchaining.xml。
 
@@ -38,9 +34,7 @@ CVE-2018-11776
 
 ![04.png](apache-struts2-s2-057-rce/04.png)
 
-&nbsp;
-
-### 漏洞分析
+## 漏洞分析
 
 `DefaultActionMapper`调用`parseNameAndNamespace()`解析`namespace`和`name`。当`alwaysSelectFullNamespace`为`true`时，`namespace`的值可以通过URL控制。
 
@@ -54,9 +48,7 @@ Action执行结束时，调用`ServletActionRedirectResult.execute()`进行重�
 
 ![07.png](apache-struts2-s2-057-rce/07.png)
 
-&nbsp;
-
-### 利用条件
+## 利用条件
 
 最小条件：
 
@@ -77,9 +69,7 @@ Action执行结束时，调用`ServletActionRedirectResult.execute()`进行重�
 ![09.png](apache-struts2-s2-057-rce/09.png)
 ![10.png](apache-struts2-s2-057-rce/10.png)
 
-&nbsp;
-
-### 构造PoC
+## 构造PoC
 
 使用Struts2老版本的PoC无法正常弹出计算器，会在获取`#context`时得到`null`值，导致`['com.opensymphony.xwork2.ActionContext.container']`求值时的`source`为空，抛出异常。
 
@@ -96,13 +86,11 @@ Action执行结束时，调用`ServletActionRedirectResult.execute()`进行重�
 
 ![14.png](apache-struts2-s2-057-rce/14.png)
 
-另外，由于Struts2.5中，几个excluded的map使用的是immutable collection，不允许修改，因此该PoC只适用于Struts2.3环境。_（2.5可以尝试使用`setXXX()`覆盖map值。）_
+另外，由于Struts2.5中，几个excluded的map使用的是unmodified collection，调用`clear()`时会抛出异常，因此该PoC只适用于Struts2.3环境，2.5可以使用`setXXX()`覆盖map值。
 
 再多说一嘴，Struts2的showcase项目没有通过大家知道的`struts.mapper.alwaysSelectFullNamespace`配置项控制`alwaysSelectFullNamespace`的值，而是通过`@Inject`进行了IoC。
 
-&nbsp;
-
-### 参考
+## 参考
 
 1. [Apache Struts2 S2-057](https://cwiki.apache.org/confluence/display/WW/S2-057)
 1. [CVE-2018-11776: How to find 5 RCEs in Apache Struts with Semmle QL](https://lgtm.com/blog/apache_struts_CVE-2018-11776)

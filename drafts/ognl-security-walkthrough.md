@@ -1,5 +1,8 @@
----
-title: OGNL安全攻略
-date: 2018-08-27 10:25:48
-tags: [java, struts2, ognl]
----
+# OGNL安全攻略
+
+![Category](https://img.shields.io/badge/category-security_research-blue.svg)
+![Research](https://img.shields.io/badge/research-web_security-blue.svg)
+![Language](https://img.shields.io/badge/lang-java-blue.svg)
+![Tag](https://img.shields.io/badge/tag-ognl-green.svg)
+![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
+![Progress](https://img.shields.io/badge/progress-0%25-red.svg)
