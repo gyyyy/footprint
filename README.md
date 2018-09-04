@@ -14,7 +14,7 @@
 
 ## 足迹
 
-### [2018年](articles/2018/README.md)
+### [2018年](articles/2018/)
 
 - &lt;article month=08 day=23 title=&quot;[Struts2远程代码执行（S2-057）漏洞分析](articles/2018/apache-struts2-s2-057-rce.md)&quot;/&gt;
 - &lt;article month=08 day=18 title=&quot;[GraphQL安全指北](articles/2018/graphql-security-overview.md)&quot;/&gt;
@@ -25,7 +25,7 @@
 - &lt;article month=05 day=09 title=&quot;[深入浅出WebExtensions（上）](articles/2018/head-first-webextensions-01.md)&quot;/&gt;
 - &lt;article month=02 day=06 title=&quot;[SQL和NoSQL注入浅析（下）](articles/2018/sql-vs-nosql-injection-02.md)&quot;/&gt;
 
-### [2017年](articles/2017/README.md)
+### [2017年](articles/2017/)
 
 - &lt;article month=12 day=21 title=&quot;[DNS解析器，深入浅出Go语言](articles/2017/head-first-golang-with-dns-parser.md)&quot;/&gt;
 - &lt;article month=11 day=23 title=&quot;[SQL和NoSQL注入浅析（上）](articles/2017/sql-vs-nosql-injection-01.md)&quot;/&gt;
