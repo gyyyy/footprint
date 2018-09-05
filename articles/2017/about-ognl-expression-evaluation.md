@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1500742098-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 在分析Struts2历年RCE的过程中，对OGNL表达式求值（OGNL Expression Evaluation）的执行细节存在一些不解和疑惑，便以本文记录跟踪调试的过程，不对的地方请指正。</small>
+<sub>* 在分析Struts2历年RCE的过程中，对OGNL表达式求值（OGNL Expression Evaluation）的执行细节存在一些不解和疑惑，便以本文记录跟踪调试的过程，不对的地方请指正。</sub>
 
 ## 前情简介
 
@@ -355,9 +355,9 @@ Apache官方描述
 
 - 问题4：`z[(foo)('meh')]`调整执行顺序的原理
 
-    解答：经调试，在`Dispatcher.createContextMap()`中会将LinkedHashMap类型的`request.parameterMap`转换为HashMap类型存储在ActionContext的`parameters`和`com.opensymphony.xwork2.ActionContext.parameters`中 *（此时顺序不变）* 。
+    解答：经调试，在`Dispatcher.createContextMap()`中会将LinkedHashMap类型的`request.parameterMap`转换为HashMap类型存储在`ActionContext`的`parameters`和`com.opensymphony.xwork2.ActionContext.parameters`中 *（此时顺序不变）* 。
 
-  - `StaticParametersInterceptor.intercept()`中`addParametersToContext()`会将`config.params`与ActionContext的`com.opensymphony.xwork2.ActionContext.parameters`合并为一个TreeMap *（TreeMap是红黑树，按key值的自然顺序动态排序，可参考Java的字符串大小比较）* ，并覆盖ActionContext中的原值
+  - `StaticParametersInterceptor.intercept()`中`addParametersToContext()`会将`config.params`与`ActionContext`的`com.opensymphony.xwork2.ActionContext.parameters`合并为一个TreeMap *（TreeMap是红黑树，按key值的自然顺序动态排序，可参考Java的字符串大小比较）* ，并覆盖`ActionContext`中的原值
   - `ParametersInterceptor.doIntercept()`中`retrieveParameters()`获取的是`com.opensymphony.xwork2.ActionContext.parameters`的值，因此漏洞作者给出的PoC中给出`z[()()]`形式来保证它的排序靠后 *（`z`字符的ASCII码在可见字符中非常靠后，而`(`字符较靠前）* 。
 
 - 问题5：`(one).(two)`和`one,two`模型的差异

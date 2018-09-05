@@ -6,7 +6,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-5%25-red.svg)
 
-<small>* 本文是去年底就准备写的，结果后来忙忘了。前段时间的[S2-048](https://struts.apache.org/docs/s2-048.html)让Java RCE又一次出现在公众的视野，于是趁热打铁。另，笔者水平实在有限，有什么不恰当或不正确的观点言论，请不吝赐教。</small>
+<sub>* 本文是去年底就准备写的，结果后来忙忘了。前段时间的[S2-048](https://struts.apache.org/docs/s2-048.html)让Java RCE又一次出现在公众的视野，于是趁热打铁。另，笔者水平实在有限，有什么不恰当或不正确的观点言论，请不吝赐教。</sub>
 
 介绍什么是Java什么是RCE的那些长篇大论我们就免了，又不是为了写本书凑字数，直接来看看Java中常见的可以导致RCE的场景：
 

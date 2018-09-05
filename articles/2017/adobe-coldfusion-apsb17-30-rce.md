@@ -21,7 +21,7 @@ CVE-2017-11283 & CVE-2017-11284
 
 ## 环境搭建
 
-官方下载试用版 *（不是最新版，未修复漏洞）*，正常安装。
+官方下载试用版 *（不是最新版，未修复漏洞）* ，正常安装。
 
 ![01.png](adobe-coldfusion-apsb17-30-rce/01.png)
 
@@ -42,15 +42,15 @@ CVE-2017-11283 & CVE-2017-11284
 
 注意观察报错信息 *（当然漏洞作者也在博客里有说明，可以仔细看看）* ，很明显是因为服务端和客户端的`serialVersionUID`不一致 *（一般为版本或其他编译环境问题）* 。
 
-进入ysoserial的rhino:js:1.7R2/js-1.7R2.jar *（Maven管理的，即Mozilla Rhino）* 中找到ScriptableObject类看看，发现它并没有显式的定义自己的`serialVersionUID`。
+进入ysoserial的rhino:js:1.7R2/js-1.7R2.jar *（Maven管理的，即Mozilla Rhino）* 中找到`ScriptableObject`类看看，发现它并没有显式的定义自己的`serialVersionUID`。
 
 ![06.png](adobe-coldfusion-apsb17-30-rce/06.png)
 
 这时候的做法有3种：
 
-1.拿到生成的Payload，找到对应的`serialVersionUID`，将它改成和服务端一致，再编写脚本或其他方式自行发包
-1.拦截TCP请求，修改对应的`serialVersionUID`值，再放行
-1.修改js-1.7R2.jar，为ScriptableObject类显式定义`serialVersionUID`并赋值
+1. 拿到生成的Payload，找到对应的`serialVersionUID`，将它改成和服务端一致，再编写脚本或其他方式自行发包
+1. 拦截TCP请求，修改对应的`serialVersionUID`值，再放行
+1. 修改js-1.7R2.jar，为`ScriptableObject`类显式定义`serialVersionUID`并赋值
 
 前两种做法问题应该不大，我们重点测试第三种。
 
@@ -60,7 +60,7 @@ CVE-2017-11283 & CVE-2017-11284
 
 将重新生成的ScriptableObject.class替换掉js-1.7R2.jar中修改之前的版本 *（当然你也可以选择直接write）* 。
 
-用新的jar包生成Payload进行测试，会发现IdScriptableObject也存在一样的问题，重复上面的工作就行了。
+用新的jar包生成Payload进行测试，会发现`IdScriptableObject`也存在一样的问题，重复上面的工作就行了。
 
 再次测试，出现的RhinoException不一致可以忽略，那已经是回包了。
 

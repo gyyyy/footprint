@@ -5,7 +5,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1527560495-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 偶然看到[@猪猪侠](http://weibo.com/ringzero)朋友圈推荐了先知的这篇文章。从攻击技术研究的角度来说，作者的观点比较符合自己胃口，所以在得到许可后转载到自己博客中留存。</small>
+<sub>* 偶然看到[@猪猪侠](http://weibo.com/ringzero)朋友圈推荐了先知的这篇文章。从攻击技术研究的角度来说，作者的观点比较符合自己胃口，所以在得到许可后转载到自己博客中留存。</sub>
 
 > 译文出处：[先知社区](https://xz.aliyun.com/t/2358)
 > 原文出处：[PortSwigger Web Security Blog](https://portswigger.net/blog/so-you-want-to-be-a-web-security-researcher)

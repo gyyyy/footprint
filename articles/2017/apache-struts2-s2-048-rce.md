@@ -10,7 +10,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1499440858-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 主要是跟实验室的小伙伴们分享一下此类漏洞出现时如何去快速的跟踪复现和分析，包括之前的S2-045也一样。</small>
+<sub>* 主要是跟实验室的小伙伴们分享一下此类漏洞出现时如何去快速的跟踪复现和分析，包括之前的S2-045也一样。</sub>
 
 ## 漏洞编号
 
@@ -23,14 +23,18 @@ CVE-2017-9791
 
 在S2-048这个预警的漏洞描述 *（360安全客）* 中，开以很清楚的看到两个信息点：
 
-> 当Struts 2中的Struts 1插件启用的情况下，攻击者通过使用恶意字段值可能造成RCE。这些不可信的输入数据被带入到ActionMessage类中的错误信息中。
+1. 当Struts 2中的Struts 1插件启用的情况下，攻击者通过使用恶意字段值可能造成RCE
+1. 这些不可信的输入数据被带入到`ActionMessage`类中的错误信息中。
 
 然后给出了临时解决方案，这是一个非常重要的信息获取点，临时解决方案一般就意味着有希望直接定位漏洞入口：
 
-> 开发者通过使用resource keys替代将原始消息直接传递给ActionMessage的方式：
-> `messages.add("msg", new ActionMessage("struts1.gangsterAdded", gform.getName()));`
-> 一定不要使用如下的方式：
-> `messages.add("msg", new ActionMessage("Gangster " + gform.getName() + " was added"));`
+- 开发者通过使用resource keys替代将原始消息直接传递给`ActionMessage`的方式：
+
+    `messages.add("msg", new ActionMessage("struts1.gangsterAdded", gform.getName()));`
+
+- 一定不要使用如下的方式：
+
+    `messages.add("msg", new ActionMessage("Gangster " + gform.getName() + " was added"));`
 
 现在可以很清楚的知道，漏洞点就是在上面这句话的中，在没有更多信息的情况下，就需要对`ActionMessage`做代码审计来进一步分析。
 
@@ -38,7 +42,7 @@ CVE-2017-9791
 
 仔细看截图的URL，里面可以很清楚的看到，项目名称struts2-showcase，这是Struts2完整包中自带的示例项目，那就可以去这个项目中全局搜索缩小范围了。
 
-再仔细看看，URL项目路径后面还可以勉强辨认出第一个字符i，前4-5个字符是g或j，好运气，直接定位integration项目，再搜索分析，范围基本确定在SaveGangsterAction中了。
+再仔细看看，URL项目路径后面还可以勉强辨认出第一个字符i，前4-5个字符是g或j，好运气，直接定位integration项目，再搜索分析，范围基本确定在`SaveGangsterAction`中了。
 
 看到这里别笑，能够先完成复现再去跟踪调试分析漏洞成因是相当有优势的，快速复现求的是速度，和CTF一样，拼的就是对分析对象的熟悉程度、分析经验和脑洞。
 
@@ -58,20 +62,20 @@ CVE-2017-9791
 
 ## 漏洞分析
 
-在struts-integration.xml配置文件中，可以看到SaveGangsterAction是被org.apache.struts2.s1.Struts1Action做了包装修饰。
+在struts-integration.xml配置文件中，可以看到`SaveGangsterAction`是被`org.apache.struts2.s1.Struts1Action`做了包装修饰。
 
 ![02.png](apache-struts2-s2-048-rce/02.png)
 
-而Struts1Action的`execute()`方法中，在第99行调用了SaveGangsterAction的`execute()`方法执行真正的业务逻辑。
+而`Struts1Action`的`execute()`方法中，在第99行调用了`SaveGangsterAction`的`execute()`方法执行真正的业务逻辑。
 
 ![03.png](apache-struts2-s2-048-rce/03.png)
 ![04.png](apache-struts2-s2-048-rce/04.png)
 
-而在第105行判断当前的actionMessage对象是否有value属性，答案当然是没有 *（所以临时修复建议是将传参由单独传一个拼接的key，改为传两个，即key和value）* ，因此跳转到第108行继续执行，其中`getText()`方法和S2-045中的`findText()`方法类似，都会解析OGNL表达式，导致漏洞被触发，就不继续往里跟了。
+而在第105行判断当前的`actionMessage`对象是否有`value`属性，答案当然是没有 *（所以临时修复建议是将传参由单独传一个拼接的key，改为传两个，即key和value）* ，因此跳转到第108行继续执行，其中`getText()`方法和S2-045中的`findText()`方法类似，都会解析OGNL表达式，导致漏洞被触发，就不继续往里跟了。
 
 至此，该漏洞利用条件为：
 
 1. 使用了struts2-struts1-plugin插件
-1. 在被Struts1Action包装的action中将用户可控的参数为key值设置到了ActionMessage中
+1. 在被`Struts1Action`包装的action中将用户可控的参数为key值设置到了`ActionMessage`中
 
 值得注意的是，该漏洞从黑盒的角度来看特征比较模糊，可以依靠对action传参的fuzz来进行检测。

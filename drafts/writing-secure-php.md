@@ -6,7 +6,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-25%25-orange.svg)
 
-<small>* 本文非完全直译，想了解作者原意，请直接阅读[<i class="fa fa-link"></i> 英文原文](https://www.addedbytes.com/blog/?tag=writing%20secure%20php)。</small>
+<sub>* 本文非完全直译，想了解作者原意，请直接阅读[<i class="fa fa-link"></i> 英文原文](https://www.addedbytes.com/blog/?tag=writing%20secure%20php)。</sub>
 
 学习如何避免PHP中最常见的错误，让你的网站更加安全。
 

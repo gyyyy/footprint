@@ -9,7 +9,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1534571287-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 在616先知白帽大会上听到[@phith0n](https://www.leavesongs.com/)大佬的议题[《攻击GraphQL》](https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf)，从攻击者视角描述了GraphQL的攻击面。让我想起之前在做某个项目时，鬼使神差的 *（其实是健忘症又犯了）* 学习并尝试了GraphQL这个还没完全火起来但又有很多大厂使用的Web API技术，当时和好基友[@图南](https://x3fwy.bitcron.com/)也对其安全性相关问题存在的疑虑做了很多探讨和研究，于是决定和他联名合作完成这篇关于GraphQL安全的文章。我俩水平有限，不足之处请批评指正。 </small>
+<sub>* 在616先知白帽大会上听到[@phith0n](https://www.leavesongs.com/)大佬的议题[《攻击GraphQL》](https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf)，从攻击者视角描述了GraphQL的攻击面。让我想起之前在做某个项目时，鬼使神差的 *（其实是健忘症又犯了）* 学习并尝试了GraphQL这个还没完全火起来但又有很多大厂使用的Web API技术，当时和好基友[@图南](https://x3fwy.bitcron.com/)也对其安全性相关问题存在的疑虑做了很多探讨和研究，于是决定和他联名合作完成这篇关于GraphQL安全的文章。我俩水平有限，不足之处请批评指正。 </sub>
 
 > 联名作者：gyyyy & 图南
 

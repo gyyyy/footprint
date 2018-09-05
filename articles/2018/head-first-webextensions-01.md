@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1525848327-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 不久前，实验室大佬[@sm0nk](http://www.cnblogs.com/shellr00t/)在xKongfoo上做了一次接口安全相关议题的演讲，在和[@浮萍](http://fuping.site/)研究BurpSuite插件开发为其做准备的时候，发现其中的部分需求和年初空闲时自己一直在玩的Web代理有一部分类似，不记得什么原因又碰巧接触了Firefox的扩展，于是边学习边尝试写了些小玩意，感兴趣的同学就跟着我的文章一起入个门吧。</small>
+<sub>* 不久前，实验室大佬[@sm0nk](http://www.cnblogs.com/shellr00t/)在xKongfoo上做了一次接口安全相关议题的演讲，在和[@浮萍](http://fuping.site/)研究BurpSuite插件开发为其做准备的时候，发现其中的部分需求和年初空闲时自己一直在玩的Web代理有一部分类似，不记得什么原因又碰巧接触了Firefox的扩展，于是边学习边尝试写了些小玩意，感兴趣的同学就跟着我的文章一起入个门吧。</sub>
 
 ## 说在前面的话
 

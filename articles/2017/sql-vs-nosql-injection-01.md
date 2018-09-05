@@ -9,7 +9,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1511374575-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 前段时间听到几位大佬对NoSQL注入相关问题进行了热烈的讨论，于是事后做了一些简单了解。本文纯属个人扯淡，与技术无关。行文仓促，如有任何问题欢迎指正。</small>
+<sub>* 前段时间听到几位大佬对NoSQL注入相关问题进行了热烈的讨论，于是事后做了一些简单了解。本文纯属个人扯淡，与技术无关。行文仓促，如有任何问题欢迎指正。</sub>
 
 ## 说在前面的话
 
@@ -110,7 +110,7 @@ rc= thd->get_protocol()->get_command(&com_data, &command);
 
 ### 客户端协议实现（Driver层）
 
-MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个版本的官方driver，本文选择大家熟悉的[MySQL Connector/J](https://github.com/mysql/mysql-connector-j/)进行分析。
+MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个版本的官方Driver，本文选择大家熟悉的[MySQL Connector/J](https://github.com/mysql/mysql-connector-j/)进行分析。
 
 在Java应用中使用MySQL Connector可以在互联网上搜到大把的示例代码，这里我们就不再多说了，它的执行流程如下 *（其中带完整包名的为JDK内对象）* ：
 
@@ -130,7 +130,7 @@ MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个
 
 在得到Statement对象后，即可调用相应方法完成增删改查等数据库操作。
 
-我们仔细分析一下普通查询在driver中是如何实现的：
+我们仔细分析一下普通查询在Driver中是如何实现的：
 
 1. `StatementImpl.executeQuery()`执行SQL语句
     - 处理语句中的Escape字符 *（见下面关于Escape章节）* ：
@@ -147,7 +147,7 @@ MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个
     - `ConnectionImpl.execSQL()`中调用`MysqlIO.sqlQueryDirect()`遵守MySQL协议封装`QUERY`指令数据包
     - `MysqlIO.sendCommand()`写入包长度和包序列号，并发包
 
-为了验证driver层主要逻辑是否通用，我们再简单分析一下PHP默认的MySQL协议实现 *（由于PHP 7版本移除了MySQL相关默认扩展，本文选择了PHP stable 5.6.32版本中的mysqli扩展，并使用官方推荐的原生驱动mysqlnd）* 。由于MySQL扩展需要遵循PHP定义的扩展实现规则，需要了解相关的前置知识才能方便阅读，因此这里不跟踪代码细节，只简单描述一下流程。前面的数据库连接就省略了，直接从查询开始：
+为了验证Driver层主要逻辑是否通用，我们再简单分析一下PHP默认的MySQL协议实现 *（由于PHP 7版本移除了MySQL相关默认扩展，本文选择了PHP stable 5.6.32版本中的mysqli扩展，并使用官方推荐的原生驱动mysqlnd）* 。由于MySQL扩展需要遵循PHP定义的扩展实现规则，需要了解相关的前置知识才能方便阅读，因此这里不跟踪代码细节，只简单描述一下流程。前面的数据库连接就省略了，直接从查询开始：
 
 1. `mysqli_nonapi`中定义的`mysqli_query()`会调用mysqlnd驱动的`mysql_real_query()`*（该函数是一个调用了`mysqlnd_query()`的宏，而`mysqlnd_query()`则是一个调用了`MYSQLND_CONN_DATA.query()`处理的宏）*
     - `MYSQLND_CONN_DATA.send_query()`中调用`simple_command()`执行命令

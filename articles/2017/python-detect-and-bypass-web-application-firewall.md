@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1498319895-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<small>* 本文非完全直译，想了解作者原意，请直接阅读[<i class="fa fa-link"></i> 英文原文](http://www.kalitutorials.net/2016/12/python-detect-and-bypass-web-application-firewall.html)。</small>
+<sub>* 本文非完全直译，想了解作者原意，请直接阅读[<i class="fa fa-link"></i> 英文原文](http://www.kalitutorials.net/2016/12/python-detect-and-bypass-web-application-firewall.html)。</sub>
 
 WAF *（Web Application Firewall）* 通常被前置于Web服务器进行部署，用来过滤发送至后端Web服务器的恶意流量。
 
@@ -23,9 +23,7 @@ WAF *（Web Application Firewall）* 通常被前置于Web服务器进行部署�
 
 在基于特征的WAF中可以定义特征，就和你熟知的Web攻击相似的模式或特征一样，可以定义一堆的特征匹配模式来阻断这些恶意流量。
 
-举个例子：
-
-Payload: `<svg><script>alert&grave;1&grave;<p>`
+举个例子：`<svg><script>alert&grave;1&grave;<p>`
 
 这是一种XSS攻击的Payload模型，所有基于这种模型的攻击一般都会包含`<script>`字符串，因此可以定义一个特征来阻断所有包含该字符串的Web请求流量。那么，针对这种攻击模型，同样也可以衍生出如下2到3个特征定义：
 
@@ -285,7 +283,7 @@ for payLoads in listofPayloads:
 
 因为现今大部分的人都只优先关心业务和产品，保证它们能够正常部署上线运行，而忽略了安全部分 *（过度重视安全也是不好的，它往往和你的部分业务产品相悖，后期会成为一个让你十分头疼的问题）* 。因此，具备自省自查的能力，能够自我主动的发现存在于自己网络基础设施中的安全威胁，始终个不错的选择。
 
-<small>[<i class="fa fa-link"></i> 查看完整源代码](https://paste.ee/p/T9qb5)</small>
+<sub>[<i class="fa fa-link"></i> 查看完整源代码](https://paste.ee/p/T9qb5)</sub>
 
 ## 说在最后的话
 
