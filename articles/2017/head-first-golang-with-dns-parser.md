@@ -116,11 +116,11 @@ RFC中对DNS消息结构的定义如下：
 
 1. NSCOUNT
 
-    - Authority部分中的域名服务器个数
+    Authority部分中的域名服务器个数
 
 1. ARCOUNT
 
-    - Additional部分中的附加记录个数
+    Additional部分中的附加记录个数
 
 知道Header长什么样之后，我们需要用Go定义一个 **结构体** *（可以当作Java中的类）* 来表示它。
 
@@ -238,14 +238,23 @@ func (h *Header) SetFlag(qr, opcode, aa, tc, rd, ra, rcode uint16) {
     查询类，与应答包共享的CLASS为QCLASS子集
 
     - IN
+
         `1`，Internet *（一般情况就用这个）*
+
     - CS
+
         `2`，CSNET
+
     - CH
+
         `3`，CHAOS
+
     - HS
+
         `4`，Hesiod
+
     - \*
+
         `255`，任意类
 
 对于上述TYPE和CLASS这类不变的数值，我们可以在程序中直接使用对应值，更规范的做法是使用 **常量** 让它们具有可读性：
@@ -370,12 +379,29 @@ func (q *Question) SetQName(qname string) {
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 ```
 
-- NANE *（同Question的QNAME）*
-- TYPE *（同Question的QTYPE中的TYPE子集）*
-- CLASS *（同Question的QCLASS中的CLASS子集）*
-- TTL *（资源记录被丢弃前的缓存时间，单位为秒）*
-- RDLENGTH *（RDATA长度）*
-- RDATA *（这就是解析结果，如果查询类型是A记录，它的值应该是4字节十六进制的IP地址）*
+- NANE
+
+    同Question的QNAME
+
+- TYPE
+
+    同Question的QTYPE中的TYPE子集
+
+- CLASS
+
+    同Question的QCLASS中的CLASS子集
+
+- TTL
+
+    资源记录被丢弃前的缓存时间，单位为秒
+
+- RDLENGTH
+
+    RDATA长度
+
+- RDATA
+
+    这就是解析结果，如果查询类型是A记录，它的值应该是4字节十六进制的IP地址
 
 这里有两点是值得注意的：
 

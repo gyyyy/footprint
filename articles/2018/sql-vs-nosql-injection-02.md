@@ -24,12 +24,19 @@
 目前对非关系型数据库的分类一般有以下四种：
 
 1. Key-Value *（键值对）*
+
     代表：Redis、Memcached
+
 1. Document-Oriented *（文档）*
+
     代表：MongoDB
+
 1. Column-Family *（列族）*
+
     代表：HBase
+
 1. Graph-Oriented *（图）*
+
     代表：Neo4J
 
 由于每种类型的非关系型数据库区别较大，甚至同种类型的具体实现方案差别也不小，而很多NoSQL也不支持条件等高级查询方式，与本文的分析场景不太一致。因此，本文还是选择目前排名较高的非关系型数据库MongoDB *（3.6.2版本）* 进行分析。
@@ -66,7 +73,7 @@ struct MsgHeader {
 - `responseTo`为服务器响应的源请求消息序列号
 - `opCode`为指令号，这里表示为`OP_QUERY`，其他指令请自查
 
-而请求包中的完整消息结构定义也很简单*（只以`OP_QUERY`为例）*：
+而请求包中的完整消息结构定义也很简单 *（只以`OP_QUERY`为例）* ：
 
 ```cpp
 struct OP_QUERY {
@@ -137,13 +144,33 @@ struct OP_QUERY {
 
 MongoDB服务器接收到客户端的连接请求后，会回调`TransportLayerASIO`中定义的`acceptCb()`，将当前的连接会话扔给`ServiceEntryPointMongod.startSession()`处理，根据会话创建并启动状态机`ServiceStateMachine`，该状态机用于描述每个客户端连接的生命周期，其中对生命周期的定义如下：
 
-1. `Created`，会话已创建
-1. `Source`，请求并处理新消息
-1. `SourceWait`，等待新消息
-1. `Process`，通过数据库执行消息
-1. `SinkWait`，等待数据库执行结果
-1. `EndSession`，结束会话
-1. `Ended`，会话已结束
+1. `Created`
+
+    会话已创建
+
+1. `Source`
+
+    请求并处理新消息
+
+1. `SourceWait`
+
+    等待新消息
+
+1. `Process`
+
+    通过数据库执行消息
+
+1. `SinkWait`
+
+    等待数据库执行结果
+
+1. `EndSession`
+
+    结束会话
+
+1. `Ended`
+
+    会话已结束
 
 当状态为`Source`时，由`_sourceMessage()`创建`ASIOSourceTicket`对象，并传给`TransportLayerASIO.wait()`，其内部调用`ASIOSourceTicket.fillImpl()`对数据包进行拆包封装：
 
@@ -153,7 +180,7 @@ MongoDB服务器接收到客户端的连接请求后，会回调`TransportLayerA
 
 随后，状态转为`Process`，由`_processMessage()`对消息进一步解析：
 
-1. `ServiceEntryPointMongod.handleRequest()`判断Namespace和操作类型，调用`receivedQuery()`处理查询类型消息*（理论上由于下面Driver发送的是`OP_MSG`指令，此处应调用`runCommands()`进行处理，但我们还是以普通的`OP_QUERY`指令处理流程来做个简单的说明）*
+1. `ServiceEntryPointMongod.handleRequest()`判断Namespace和操作类型，调用`receivedQuery()`处理查询类型消息 *（理论上由于下面Driver发送的是`OP_MSG`指令，此处应调用`runCommands()`进行处理，但我们还是以普通的`OP_QUERY`指令处理流程来做个简单的说明）*
     - 重新封装消息为`QueryMessage`类型，其中会根据数据长度及调用`validateBSON()`对操作内容的数据完整性进行校验 *（没做语义分析）*
     - 判断查询操作权限 *（见下面关于身份认证章节）*
     - 调用`runQuery()`进入查询操作的解析执行阶段
@@ -189,7 +216,7 @@ MongoDB服务器接收到客户端的连接请求后，会回调`TransportLayerA
     ```
 1. 实例化`MongoClient`对象，其父类`Mongo`会调用`DefaultClusterFactory.createCluster()`创建一个`SingleServerCluster` *（非集群部署时，其中涉及的身份认证过程在之后的相关章节描述）*
     - 初始化`ConnectionPool`和`DefaultServerMonitor`
-    - 另启线程执行`DefaultServerMonitor`中的`monitorThread`，该线程的`monitor`任务会根据配置中的间隔时间循环，向服务器发送心跳数据包*（`OP_MSG`指令）*
+    - 另启线程执行`DefaultServerMonitor`中的`monitorThread`，该线程的`monitor`任务会根据配置中的间隔时间循环，向服务器发送心跳数据包 *（`OP_MSG`指令）*
     - 每次调用`InternalStreamConnection.open()`初始化并打开连接时，都会向服务器发送三个`OP_QUERY`指令获取其ismaster、buildinfo和getlasterror信息
 1. `MongoClient.getDatabase()`根据数据库名称返回`MongoDatabaseImpl`实例 *（未与服务器交互）*
 1. `MongoDatabaseImpl.getCollection()`根据集合名称返回`MongoCollectionImpl`实例 *（未与服务器交互）*
@@ -272,7 +299,7 @@ private static boolean isServerVersionAtLeastThreeDotSix(final MessageSettings s
         - `CmdSaslStart`和`CmdSaslContinue`重写`requiresAuth()`和`addRequiredPrivileges()`，绕过身份和权限校验
         - `runCommandImpl()`分别调用`CmdSaslStart`和`CmdSaslContinue`的`run()`完成身份认证流程，并将认证成功的User加入`AuthorizationSession._authenticatedUsers`集合
 
-随后执行同连接的查询等其他操作*（还是以`OP_QUERY`为例）*：
+随后执行同连接的查询等其他操作 *（还是以`OP_QUERY`为例）* ：
 
 1. `receivedQuery()`会调用`AuthorizationSession.checkAuthForFind()`对当前操作数据库的活动类型 *（`ActionType.Find`）* 进行权限校验
     - 校验是否满足默认最小权限 *（源代码中注释的是『localhost exception is active (and no users exist)』）*

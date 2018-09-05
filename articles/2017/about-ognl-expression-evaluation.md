@@ -3,6 +3,8 @@
 ![Category](https://img.shields.io/badge/category-security_research-blue.svg)
 ![Research](https://img.shields.io/badge/research-web_security-blue.svg)
 ![Language](https://img.shields.io/badge/lang-java-blue.svg)
+![Vuln Component](https://img.shields.io/badge/vuln_component-struts2-red.svg)
+![Vuln Type](https://img.shields.io/badge/vuln_type-rce-red.svg)
 ![Tag](https://img.shields.io/badge/tag-ognl-green.svg)
 ![Timestamp](https://img.shields.io/badge/timestamp-1500742098-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
@@ -13,50 +15,73 @@
 
 - S2-003对`#`等特殊字符编码，并包裹在字符串中，利用OGNL表达式求值`(one)(two)`模型绕过限制
 - S2-005在基于S2-003的基础上，通过控制`allowStaticMethodAccess`绕过S2-003修复方案
-- S2-009通过HTTP传参将Payload赋值在可控的action属性 *（`setter()`/`getter()`）* 中，再利用额外请求参数，设置其名称为『无害』OGNL表达式绕过ParametersInterceptor中对参数名的正则限制，并成功执行Payload
+- S2-009通过HTTP传参将Payload赋值在可控的action属性 *（`setter()`/`getter()`）* 中，再利用额外请求参数，设置其名称为『无害』OGNL表达式绕过`ParametersInterceptor`中对参数名的正则限制，并成功执行Payload
 
 ### PoC样本
 
 - S2-003
+
     `(aaa)(('\u0023context[\'xwork.MethodAccessor.denyMethodExecution\']\u003d\u0023foo')(\u0023foo\u003dnew\u0020java.lang.Boolean(false)))&(asdf)(('\u0023rt.exec(\'calc\')')(\u0023rt\u003d@java.lang.Runtime@getRuntime()))=1`
+
 - S2-005
+
     `('\u0023_memberAccess[\'allowStaticMethodAccess\']')(meh)=true&(aaa)(('\u0023context[\'xwork.MethodAccessor.denyMethodExecution\']\u003d\u0023foo')(\u0023foo\u003dnew\u0020java.lang.Boolean(false)))&(asdf)(('\u0023rt.exec(\'calc\')')(\u0023rt\u003d@java.lang.Runtime@getRuntime()))=1`
+
 - S2-009
+
     `foo=(#context['xwork.MethodAccessor.denyMethodExecution']=new java.lang.Boolean(false),#_memberAccess['allowStaticMethodAccess']=new java.lang.Boolean(true),@java.lang.Runtime@getRuntime().exec('calc'))(meh)&z[(foo)('meh')]=true`
 
 ## 关于OGNL
 
 ### 一点点基础概念
 
-- `$`，`#`，`@`和`%`
-  - `$`：在配置文件、国际化资源文件中引用OGNL表达式
-  - `#`：访问非root对象，相当于`ActionContext.getContext()`
-  - `@`：访问静态属性、静态方法
-  - `%`：强制内容为OGNL表达式
-- context和root
-  - context：OGNL执行上下文环境，HashMap类型
-  - root：根对象，ArrayList类型 *（默认访问对象，不需要`#`操作符）*
+1. `$`，`#`，`@`和`%`
+    - `$`
+
+        在配置文件、国际化资源文件中引用OGNL表达式
+
+    - `#`
+
+        访问非root对象，相当于`ActionContext.getContext()`
+
+    - `@`
+
+        访问静态属性、静态方法
+
+    - `%`
+
+        强制内容为OGNL表达式
+
+1. context和root
+    - context
+
+        OGNL执行上下文环境，HashMap类型
+
+    - root
+
+        根对象，ArrayList类型 *（默认访问对象，不需要`#`操作符）*
 
 ### OGNL表达式求值
 
-Apache官方描述
+Apache官方描述：
 
 > If you follow an OGNL expression with a parenthesized expression, without a dot in front of the parentheses, OGNL will try to treat the result of the first expression as another expression to evaluate, and will use the result of the parenthesized expression as the root object for that evaluation. The result of the first expression may be any object; if it is an AST, OGNL assumes it is the parsed form of an expression and simply interprets it; otherwise, OGNL takes the string value of the object and parses that string to get the AST to interpret.
-> 如果你在任意对象后面紧接着一个带括号的OGNL表达式，而中间没有使用`.`符号连接，那么OGNL将会试着把第一个表达式的计算结果当作一个新的表达式再去计算，并且把带括号表达式的计算结果作为本次计算的根对象。第一个表达式的计算结果可以是任意对象；如果它是一个AST树，OGNL就会认为这是一个表达式的解析形态，然后直接解释它；否则，OGNL会拿到这个对象的字符串值，然后去解释通过解析这个字符串得到的AST树 *（译者注：在root或context中搜索匹配）* 。
-> For example, this expression
-> `#fact(30H)`
-> looks up the fact variable, and interprets the value of that variable as an OGNL expression using the BigInteger representation of 30 as the root object. See below for an example of setting the fact variable with an expression that returns the factorial of its argument. Note that there is an ambiguity in OGNL's syntax between this double evaluation operator and a method call. OGNL resolves this ambiguity by calling anything that looks like a method call, a method call. For example, if the current object had a fact property that held an OGNL factorial expression, you could not use this approach to call it
-> 查找这个`fact`变量，并将它的值当作一个使用`30H`作为根对象的OGNL表达式去解释。看下面的例子，设置一个返回传入参数阶乘结果的表达式的`fact`变量。注意，这里存在一个关于二次计算和方法调用之间的OGNL语法歧义。OGNL为了消除歧义，会把任何看起来像方法调用的语法都当作方法去调用。举个例子，如果当前对象中存在一个持有OGNL阶乘表达式的`fact`属性，你就不能用下面的形式去调用它
-> `fact(30H)`
-> because OGNL would interpret this as a call to the fact method. You could force the interpretation you want by surrounding the property reference by parentheses:
-> 因为OGNL将会把它当作一个`fact`方法去调用。你可以用括号将它括起来，强制让OGNL去对它作解释：
-> `(fact)(30H)`
 
-漏洞作者 *（Meder Kydyraliev, Google Security Team）* 描述
+如果你在任意对象后面紧接着一个带括号的OGNL表达式，而中间没有使用`.`符号连接，那么OGNL将会试着把第一个表达式的计算结果当作一个新的表达式再去计算，并且把带括号表达式的计算结果作为本次计算的根对象。第一个表达式的计算结果可以是任意对象；如果它是一个AST树，OGNL就会认为这是一个表达式的解析形态，然后直接解释它；否则，OGNL会拿到这个对象的字符串值，然后去解释通过解析这个字符串得到的AST树 *（译者注：在root或context中搜索匹配）* 。
 
-> `(one)(two)`
-> will evaluate one as an OGNL expression and will use its return value as another OGNL expression that it will evaluate with two as a root for the evaluation. So if one returns blah, then blah is evaluated as an OGNL statement.
-> 它将会把`one`当作一个OGNL表达式去计算，然后把它的结果当作另一个以`two`为根对象的OGNL表达式再一次计算。所以，如果`one`有返回内容 *（译者注：能被正常计算，解析为AST树）* ，那么这些内容将会被当作OGNL语句被计算。
+> For example, this expression `#fact(30H)` looks up the fact variable, and interprets the value of that variable as an OGNL expression using the BigInteger representation of 30 as the root object. See below for an example of setting the fact variable with an expression that returns the factorial of its argument. Note that there is an ambiguity in OGNL's syntax between this double evaluation operator and a method call. OGNL resolves this ambiguity by calling anything that looks like a method call, a method call. For example, if the current object had a fact property that held an OGNL factorial expression, you could not use this approach to call it `fact(30H)`
+
+例如，表达式`#fact(30H)`会查找这个`fact`变量，并将它的值当作一个使用`30H`作为根对象的OGNL表达式去解释。看下面的例子，设置一个返回传入参数阶乘结果的表达式的`fact`变量。注意，这里存在一个关于二次计算和方法调用之间的OGNL语法歧义。OGNL为了消除歧义，会把任何看起来像方法调用的语法都当作方法去调用。比方说，如果当前对象中存在一个持有OGNL阶乘表达式的`fact`属性，你就不能用`fact(30H)`的形式去调用它
+
+> because OGNL would interpret this as a call to the fact method. You could force the interpretation you want by surrounding the property reference by parentheses: `(fact)(30H)`
+
+因为OGNL将会把它当作一个`fact`方法去调用。你可以像`(fact)(30H)`这样用括号将它括起来，强制让OGNL去对它作解释
+
+漏洞作者 *（Meder Kydyraliev, Google Security Team）* 描述：
+
+> `(one)(two)` will evaluate one as an OGNL expression and will use its return value as another OGNL expression that it will evaluate with two as a root for the evaluation. So if one returns blah, then blah is evaluated as an OGNL statement.
+
+`(one)(two)`将会把`one`当作一个OGNL表达式去计算，然后把它的结果当作另一个以`two`为根对象的OGNL表达式再一次计算。所以，如果`one`有返回内容 *（译者注：能被正常计算，解析为AST树）* ，那么这些内容将会被当作OGNL语句被计算。
 
 *（临时简单的翻译了一下便于自己理解，英语水平有限，比较生硬拗口，没有细究，还是尽量看原文自己理解原意吧）*
 
@@ -219,19 +244,19 @@ Apache官方描述
 
 - 问题1：`(one)(two)`模型的具体执行流程
 
-    解答：`(one)(two)`模型生成的AST树属于ASTEval类型，大致执行流程如下：
+    `(one)(two)`模型生成的AST树属于ASTEval类型，大致执行流程如下：
 
-  1. 计算`one`，结果赋值给变量expr
-  1. 计算`two`，结果赋值给变量source
-  1. 判断expr是否Node类型 *（AST树）* ，否则以其字符串形式进行解析 *（`ognl.Ognl.parseExpression()`）* ，结果都强制转换成Node类型并赋值给node
-  1. 临时将source放入当前root中
-  1. 计算node
-  1. 还原root
-  1. 返回结果
+    1. 计算`one`，结果赋值给变量expr
+    1. 计算`two`，结果赋值给变量source
+    1. 判断expr是否Node类型 *（AST树）* ，否则以其字符串形式进行解析 *（`ognl.Ognl.parseExpression()`）* ，结果都强制转换成Node类型并赋值给node
+    1. 临时将source放入当前root中
+    1. 计算node
+    1. 还原root
+    1. 返回结果
 
 - 问题2：`(one)((two)(three))`模型的具体执行流程
 
-    解答：`(one)((two)(three))`模型属于`(one)(two)`模型的嵌套形式，完全可以参考问题1，执行流程就不再详述了。
+    `(one)((two)(three))`模型属于`(one)(two)`模型的嵌套形式，完全可以参考问题1，执行流程就不再详述了。
 
 ### S2-005
 
@@ -303,12 +328,12 @@ Apache官方描述
 
 - 问题3：`denyMethodExecution`和`allowStaticMethodAccess`两者使用的模型是否可以互换
 
-    解答：`denyMethodExecution`存在于OgnlContext.values（即对外暴露的context本身）HashMap中，而`allowStaticMethodAccess`存在于OgnlValueStack.securityMemberAccess（与context同级，可以使用`#_memberAccess`取到）对象中。
+    `denyMethodExecution`存在于OgnlContext.values（即对外暴露的context本身）HashMap中，而`allowStaticMethodAccess`存在于OgnlValueStack.securityMemberAccess（与context同级，可以使用`#_memberAccess`取到）对象中。
 
-  - 将`allowStaticMethodAccess`参照`denyMethodExecution`模型改写，执行成功
-  - 将`denyMethodExecution`参照`allowStaticMethodAccess`模型改写，执行失败，原因分析如下：
-    - `denyMethodExecution`的accessor是XWorkMapPropertyAccessor类型，赋值即对context进行`map.put()`，在value为数组的情况下，会原样赋值为数组，[0]元素为字符串『false』，导致失败
-    - `allowStaticMethodAccess`的accessor是ObjectAccessor类型，赋值即通过反射调用对应的`setAllowStaticMethodAccess()`方法，传参刚好为数组，可被正常拆解为其中的单个元素
+    1. 将`allowStaticMethodAccess`参照`denyMethodExecution`模型改写，执行成功
+    1. 将`denyMethodExecution`参照`allowStaticMethodAccess`模型改写，执行失败，原因分析如下：
+        - `denyMethodExecution`的accessor是XWorkMapPropertyAccessor类型，赋值即对context进行`map.put()`，在value为数组的情况下，会原样赋值为数组，[0]元素为字符串『false』，导致失败
+        - `allowStaticMethodAccess`的accessor是ObjectAccessor类型，赋值即通过反射调用对应的`setAllowStaticMethodAccess()`方法，传参刚好为数组，可被正常拆解为其中的单个元素
 
 ### S2-009
 
@@ -355,17 +380,17 @@ Apache官方描述
 
 - 问题4：`z[(foo)('meh')]`调整执行顺序的原理
 
-    解答：经调试，在`Dispatcher.createContextMap()`中会将LinkedHashMap类型的`request.parameterMap`转换为HashMap类型存储在`ActionContext`的`parameters`和`com.opensymphony.xwork2.ActionContext.parameters`中 *（此时顺序不变）* 。
+    经调试，在`Dispatcher.createContextMap()`中会将LinkedHashMap类型的`request.parameterMap`转换为HashMap类型存储在`ActionContext`的`parameters`和`com.opensymphony.xwork2.ActionContext.parameters`中 *（此时顺序不变）* 。
 
-  - `StaticParametersInterceptor.intercept()`中`addParametersToContext()`会将`config.params`与`ActionContext`的`com.opensymphony.xwork2.ActionContext.parameters`合并为一个TreeMap *（TreeMap是红黑树，按key值的自然顺序动态排序，可参考Java的字符串大小比较）* ，并覆盖`ActionContext`中的原值
-  - `ParametersInterceptor.doIntercept()`中`retrieveParameters()`获取的是`com.opensymphony.xwork2.ActionContext.parameters`的值，因此漏洞作者给出的PoC中给出`z[()()]`形式来保证它的排序靠后 *（`z`字符的ASCII码在可见字符中非常靠后，而`(`字符较靠前）* 。
+    1. `StaticParametersInterceptor.intercept()`中`addParametersToContext()`会将`config.params`与`ActionContext`的`com.opensymphony.xwork2.ActionContext.parameters`合并为一个TreeMap *（TreeMap是红黑树，按key值的自然顺序动态排序，可参考Java的字符串大小比较）* ，并覆盖`ActionContext`中的原值
+    1. `ParametersInterceptor.doIntercept()`中`retrieveParameters()`获取的是`com.opensymphony.xwork2.ActionContext.parameters`的值，因此漏洞作者给出的PoC中给出`z[()()]`形式来保证它的排序靠后 *（`z`字符的ASCII码在可见字符中非常靠后，而`(`字符较靠前）* 。
 
 - 问题5：`(one).(two)`和`one,two`模型的差异
 
-    解答：提取S2-009中Payload进行分析，两种模型都能正常执行，细节差异如下：
+    提取S2-009中Payload进行分析，两种模型都能正常执行，细节差异如下：
 
-  - `(one).(two)`被解析成`one.two`，ASTChain类型 *（遍历子节点计算，前子节点的计算结果作为临时root代入后子节点进行计算，返回最后一个子节点的计算结果）* ，以`.`字符分隔各子节点，Payload样本被分解为4个子节点 *（`@java.lang.Runtime@getRuntime().exec('calc')`被分解为`@java.lang.Runtime@getRuntime()`和`exec('calc')`）*
-  - `one,two`被解析成`one,two`，ASTSequence类型 *（遍历子节点计算，返回最后一个子节点的计算结果）* ，以`,`字符分隔各子节点，Payload样本被正常分解为3个子节点
+    1. `(one).(two)`被解析成`one.two`，ASTChain类型 *（遍历子节点计算，前子节点的计算结果作为临时root代入后子节点进行计算，返回最后一个子节点的计算结果）* ，以`.`字符分隔各子节点，Payload样本被分解为4个子节点 *（`@java.lang.Runtime@getRuntime().exec('calc')`被分解为`@java.lang.Runtime@getRuntime()`和`exec('calc')`）*
+    1. `one,two`被解析成`one,two`，ASTSequence类型 *（遍历子节点计算，返回最后一个子节点的计算结果）* ，以`,`字符分隔各子节点，Payload样本被正常分解为3个子节点
 
 ## OGNL ASTNode
 
@@ -377,232 +402,373 @@ Apache官方描述
 
 首先当然是他们的父类：
 
-- SimpleNode *（仅对计算相关的方法作解释，解析编译相关的方法也暂略）*
-  - 主要方法
-    - `public SimpleNode(int)`
-    - `public SimpleNode(OgnlParser, int)`
-    - `public void jjtOpen()`
-    - `public void jjtClose()`
-    - `public void jjtSetParent(Node)`
-    - `public Nod jjtGetParent()`
-    - `public void jjtAddChild(Node, int)`
-    - `public Node jjtGetChild(int)`
-    - `public int jjtGetNumChildren()`
-    - `public String toString()`
-    - `public String toString(String)`
-    - `public String toGetSourceString(OgnlContext, Object)`
-    - `public String toSetSourceString(OgnlContext, Object)`
-    - `public void dump(PrintWrite, String)`
-    - `public int getIndexInParent()`
-    - `public Node getNextSibling()`
-    - `protected Object evaluateGetValueBody(OgnlContext, Object)`
-        调用`getValueBody()`方法 *（如果已经求过值，且存在固定值，则直接返回固定值）*
-    - `protected void evaluateSetValueBody(OgnlContext, Object, Object)`
-        调用`setValueBody()`方法
-    - `public final Object getValue(OgnlContext, Object)`
-        调用`evaluateGetValueBody()`方法 *（子类不允许复写）*
-    - `protected abstract Object getValueBody(OgnlContext, Object)`
-        抽象方法 *（子类必须实现）*
-    - `public final void setValue(OgnlContext, Object, Object)`
-        调用`evaluateSetValueBody()`方法 *（子类不允许复写）*
-    - `protected void setValueBody(OgnlContext, Object, Object)`
-        抛出InappropriateExpressionException异常
-    - `public boolean isNodeConstant(OgnlContext)`
-        返回false
-    - `public boolean isConstant(OgnlContext)`
-        调用`isNodeConstant()`方法
-    - `public boolean isNodeSimpleProperty(OgnlContext)`
-        返回false
-    - `public boolean isSimpleProperty(OgnlContext)`
-        调用`isNodeSimpleProperty()`方法
-    - `public boolean isSimpleNavigationChain(OgnlContext)`
-        调用`isSimpleProperty()`方法
-    - `public boolean isEvalChain(OgnlContext)`
-        任意子节点的`isEvalChain()`结果为true则返回true，否则返回false
-    - `public boolean isSequence(OgnlContext)`
-        任意子节点的`isSequence()`结果为true则返回true，否则返回false
-    - `public boolean isOperation(OgnlContext)`
-        任意子节点的`isOperation()`结果为true则返回true，否则返回false
-    - `public boolean isChain(OgnlContext)`
-        任意子节点的`isChain()`结果为true则返回true，否则返回false
-    - `public boolean isSimpleMethod(OgnlContext)`
-        返回false
-    - `protected boolean lastChild(OgnlContext)`
-    - `protected void flattenTree()`
-    - `public ExpressionAccessor getAccessor()`
-        返回`_accessor`变量
-    - `public void setAccessor(ExpressionAccessor)`
-        设置`_accessor`变量
+1. SimpleNode *（仅对计算相关的方法作解释，解析编译相关的方法也暂略）*
+    - 主要方法
+        - `public SimpleNode(int)`
+        - `public SimpleNode(OgnlParser, int)`
+        - `public void jjtOpen()`
+        - `public void jjtClose()`
+        - `public void jjtSetParent(Node)`
+        - `public Nod jjtGetParent()`
+        - `public void jjtAddChild(Node, int)`
+        - `public Node jjtGetChild(int)`
+        - `public int jjtGetNumChildren()`
+        - `public String toString()`
+        - `public String toString(String)`
+        - `public String toGetSourceString(OgnlContext, Object)`
+        - `public String toSetSourceString(OgnlContext, Object)`
+        - `public void dump(PrintWrite, String)`
+        - `public int getIndexInParent()`
+        - `public Node getNextSibling()`
+        - `protected Object evaluateGetValueBody(OgnlContext, Object)`
+
+            调用`getValueBody()`方法 *（如果已经求过值，且存在固定值，则直接返回固定值）*
+
+        - `protected void evaluateSetValueBody(OgnlContext, Object, Object)`
+
+            调用`setValueBody()`方法
+
+        - `public final Object getValue(OgnlContext, Object)`
+
+            调用`evaluateGetValueBody()`方法 *（子类不允许复写）*
+
+        - `protected abstract Object getValueBody(OgnlContext, Object)`
+
+            抽象方法 *（子类必须实现）*
+
+        - `public final void setValue(OgnlContext, Object, Object)`
+
+            调用`evaluateSetValueBody()`方法 *（子类不允许复写）*
+
+        - `protected void setValueBody(OgnlContext, Object, Object)`
+
+            抛出InappropriateExpressionException异常
+
+        - `public boolean isNodeConstant(OgnlContext)`
+
+            返回`false`
+
+        - `public boolean isConstant(OgnlContext)`
+
+            调用`isNodeConstant()`方法
+
+        - `public boolean isNodeSimpleProperty(OgnlContext)`
+
+            返回`false`
+
+        - `public boolean isSimpleProperty(OgnlContext)`
+
+            调用`isNodeSimpleProperty()`方法
+
+        - `public boolean isSimpleNavigationChain(OgnlContext)`
+
+            调用`isSimpleProperty()`方法
+
+        - `public boolean isEvalChain(OgnlContext)`
+
+            任意子节点的`isEvalChain()`结果为`true`则返回`true`，否则返回`false`
+
+        - `public boolean isSequence(OgnlContext)`
+
+            任意子节点的`isSequence()`结果为`true`则返回`true`，否则返回`false`
+
+        - `public boolean isOperation(OgnlContext)`
+
+            任意子节点的`isOperation()`结果为`true`则返回`true`，否则返回`false`
+
+        - `public boolean isChain(OgnlContext)`
+
+            任意子节点的`isChain()`结果为`true`则返回`true`，否则返回`false`
+
+        - `public boolean isSimpleMethod(OgnlContext)`
+
+            返回`false`
+
+        - `protected boolean lastChild(OgnlContext)`
+        - `protected void flattenTree()`
+        - `public ExpressionAccessor getAccessor()`
+
+            返回`_accessor`变量
+
+        - `public void setAccessor(ExpressionAccessor)`
+
+            设置`_accessor`变量
 
 再来是ASTNode大家族：
 
-- ASTAssign
-  - 表现形式
-    - `one = two`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        右节点的计算结果作为result，传入左节点的`setValue()`方法，返回result
-    - `public boolean isOperation(OgnlContext)`
-        返回true
-- ASTChain
-  - 表现形式
-    - `one.two`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算 *（IndexedProperty类型调用`OgnlRuntime.getIndexProperty()`方法，其他调用`getValue()`方法）* ，且前后子节点成菊花链，返回最后一个子节点的计算结果
-    - `protected void setValueBody(OgnlContext, Object)`
-        遍历最后一个子节点外的其他子节点计算 *（基本同上）* ，调用最后一个子节点的`setValue()`方法 *（IndexedProperty类型则是遍历到倒数第二个子节点时调用`OgnlRuntime.setIndexedProperty()`方法）*
-    - `public boolean isSimpleNavigationChain(OgnlContext)`
-        所有子节点的`isSimpleProperty()`结果都为true则返回true，否则返回false
-    - `public bollean isChain(OgnlContext)`
-        1. 返回true
-- ASTConst
-  - 表现形式
-    - `null` *（null，字符串形式）*
-    - `"one"` *（String类型）*
-    - `'o'` *（Character类型）*
-    - `0L` *（Long类型）*
-    - `0B` *（BigDecimal类型）*
-    - `0H` *（BigInteger类型）*
-    - `:[ one ]` *（Node类型）*
-  - 实现/重写方法
-    - `public void setValue(Object)`
-        设置`value`变量
-    - `public Object getValue()`
-        返回`value`变量
-    - `protected Object getValueBody(OgnlContext, Object)`
-        返回`value`变量
-    - `public boolean isNodeConstant(OgnlContext)`
-        返回true
-- ASTCtor
-  - 表现形式
-    - `new one[two]` *（默认初始化数组）*
-    - `new one[] two` *（静态初始化数组）*
-    - `new one()` *（无参对象）*
-    - `new one(two, three)` *（含参对象）*
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算，结果放入`args`数组变量，并传入`OgnlRuntime.callConstructor()`方法 *（如果是数组，则调用`Array.newInstance()`方法）* ，返回实例化对象
-- ASTEval
-  - 表现形式
-    - `(one)(two)`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        左节点的计算结果作为expr，右节点的计算结果作为source，判断expr是否为Node类型，否则解析，结果作为node，source放入root中，并传入node计算
-    - `protected void setValueBody(OgnlContext, Object, Object)`
-        左节点的计算结果作为expr，右节点的计算结果作为target，判断expr是否为Node类型，否则解析，结果作为node，target放入root中，并传入node的`setValue()`方法
-    - `public boolean isEvalChain(OgnlContext)`
-        返回true
-- ASTKeyValue
-  - 表现形式
-    - `one -> two`
-  - 实现/重写方
-    - `protected Object getValueBody(OgnlContext, Object)`
-        返回null
-- ASTList
-  - 表现形式
-    - `{ one, two }`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算，结果放入ArrayList对象，遍历结束后返回
-- ASTMap
-  - 表现形式
-    - `#@one@{ two : three, four : five }` *（存在类名）*
-    - `#{ one : two, three : four }`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        根据类名实例化Map对象 *（如果没有类名就是默认的LinkedHashMap类型）* ，遍历子节点，当前子节点 *（ASTKeyValue类型）* 为key，其计算结果为value，放入Map中
-- ASTMethod
-  - 表现形式
-    - `one()` *（无参方法）*
-    - `one(two, three)` *（含参方法）*
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算，结果放入`args`数组变量，并传入`OgnlRuntime.callMethod()`方法，如果结果为空 *（即无此方法）* ，则设置空方法执行结果，返回执行结果
-    - `public boolean isSimpleMethod(OgnlContext)`
-        返回true
-- ASTProject
-  - 表现形式
-    - `{ one }`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果放入ArrayList对象，遍历结束后返回
-- ASTProperty
-  - 表现形式
-    - `one`
-    - `[one]` *（Indexed类型）*
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        调用`getProperty()`对第一个子节点求值，结果作为name传入`OgnlRuntime.getProperty()`，返回执行结果
-    - `protected void setValueBody(OgnlContext, Object, Object)`
-        调用`OgnlRuntime.setProperty()`方法
-    - `public boolean isNodeSimpleProperty(OgnlContext)`
-        返回第一个子节点的`isConstant()`结果
-- ASTSelect
-  - 表现形式
-    - `{? one }`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则放入ArrayList对象，遍历结束后返回ArrayList
-- ASTSelectFirst
-  - 表现形式
-    - `{^ one }`
-  - 实现/重写方法
-    - `protected void getValueBody(OgnlContext, Object)`
-        遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则放入ArrayList对象并跳出遍历，遍历结束后返回ArrayList
-- ASTSelectLast
-  - 表现形式
-    - `{$ one }`
-  - 实现/重写方法
-    - `protected void getValueBody(OgnlContext, Object)`
-        遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则清空ArrayList对象并放入，遍历结束后返回ArrayList
-- ASTSequence
-  - 表现形式
-    - `one, two`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算，返回最后一个子节点的计算结果
-    - `protected Object setValueBody(OgnlContext, Object, Object)`
-        遍历最后一个子节点外的其他子节点计算，调用最后一个子节点的`setValue()`方法
-- ASTStaticField
-  - 表现形式
-    - `@one@two`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        调用`OgnlRuntime.getStaticField()`方法
-    - `public boolean isNodeConstant(OgnlContext)`
-        如果字段名称为『class』或类是Enum类型，直接返回true，否则通过反射判断是否为静态字段，返回判断结果
-- ASTStaticMethod
-  - 表现形式
-    - `@one@two()` *（无参方法）*
-    - `@one@two(three, four)` *（含参方法）*
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        遍历子节点计算，结果放入args数组变量，并传入`OgnlRuntime.callStaticMethod()`方法，返回执行结果
-- ASTVarRef
-  - 表现形式
-    - `#one`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        调用`OgnlContext.get()`方法
-    - `protected void getValueBody(OgnlContext, Object, Object)`
-        调用`OgnlContext.set()`方法
-- ASTRootVarRef
-  - 表现形式
-    - `#root`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        调用`OgnlContext.getRoot()`方法
-    - `protected void setValueBody(OgnlContext, Object, Object)`
-        调用`OgnlContext.setRoot()`方法
-- ASTThisVarRef
-  - 表现形式
-    - `#this`
-  - 实现/重写方法
-    - `protected Object getValueBody(OgnlContext, Object)`
-        调用`OgnlContext.getCurrentObject()`方法
-    - `protected void setValueBody(OgnlContext, Object, Object)`
-        调用`OgnlContext.setCurrentObject()`方法
+1. ASTAssign
+    - 表现形式
+        - `one = two`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            右节点的计算结果作为result，传入左节点的`setValue()`方法，返回result
+
+        - `public boolean isOperation(OgnlContext)`
+
+            返回`true`
+
+1. ASTChain
+    - 表现形式
+        - `one.two`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算 *（IndexedProperty类型调用`OgnlRuntime.getIndexProperty()`方法，其他调用`getValue()`方法）* ，且前后子节点成菊花链，返回最后一个子节点的计算结果
+
+        - `protected void setValueBody(OgnlContext, Object)`
+
+            遍历最后一个子节点外的其他子节点计算 *（基本同上）* ，调用最后一个子节点的`setValue()`方法 *（IndexedProperty类型则是遍历到倒数第二个子节点时调用`OgnlRuntime.setIndexedProperty()`方法）*
+
+        - `public boolean isSimpleNavigationChain(OgnlContext)`
+
+            所有子节点的`isSimpleProperty()`结果都为`true`则返回`true`，否则返回`false`
+
+        - `public bollean isChain(OgnlContext)`
+
+            返回`true`
+
+1. ASTConst
+    - 表现形式
+        - `null`
+
+            null *（字符串形式）*
+
+        - `"one"`
+
+            String类型
+
+        - `'o'`
+
+            Character类型
+
+        - `0L`
+
+            Long类型
+
+        - `0B`
+
+            BigDecimal类型
+
+        - `0H`
+
+            BigInteger类型
+
+        - `:[ one ]`
+
+            Node类型
+
+    - 实现/重写方法
+        - `public void setValue(Object)`
+
+            设置`value`变量
+
+        - `public Object getValue()`
+
+            返回`value`变量
+
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            返回`value`变量
+
+        - `public boolean isNodeConstant(OgnlContext)`
+
+            返回`true`
+
+1. ASTCtor
+    - 表现形式
+        - `new one[two]`
+
+            默认初始化数组
+
+        - `new one[] two`
+
+            静态初始化数组
+
+        - `new one()`
+
+            无参对象
+
+        - `new one(two, three)`
+
+            含参对象
+
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算，结果放入`args`数组变量，并传入`OgnlRuntime.callConstructor()`方法 *（如果是数组，则调用`Array.newInstance()`方法）* ，返回实例化对象
+
+1. ASTEval
+    - 表现形式
+        - `(one)(two)`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            左节点的计算结果作为expr，右节点的计算结果作为source，判断expr是否为Node类型，否则解析，结果作为node，source放入root中，并传入node计算
+
+        - `protected void setValueBody(OgnlContext, Object, Object)`
+
+            左节点的计算结果作为expr，右节点的计算结果作为target，判断expr是否为Node类型，否则解析，结果作为node，target放入root中，并传入node的`setValue()`方法
+
+        - `public boolean isEvalChain(OgnlContext)`
+
+            返回`true`
+
+1. ASTKeyValue
+    - 表现形式
+        - `one -> two`
+    - 实现/重写方
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            返回`null`
+
+1. ASTList
+    - 表现形式
+        - `{ one, two }`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算，结果放入ArrayList对象，遍历结束后返回
+
+1. ASTMap
+    - 表现形式
+        - `#@one@{ two : three, four : five }` *（存在类名）*
+        - `#{ one : two, three : four }`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            根据类名实例化Map对象 *（如果没有类名就是默认的LinkedHashMap类型）* ，遍历子节点，当前子节点 *（ASTKeyValue类型）* 为key，其计算结果为value，放入Map中
+
+1. ASTMethod
+    - 表现形式
+        - `one()` *（无参方法）*
+        - `one(two, three)` *（含参方法）*
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算，结果放入`args`数组变量，并传入`OgnlRuntime.callMethod()`方法，如果结果为空 *（即无此方法）* ，则设置空方法执行结果，返回执行结果
+
+        - `public boolean isSimpleMethod(OgnlContext)`
+
+            返回`true`
+
+1. ASTProject
+    - 表现形式
+        - `{ one }`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果放入ArrayList对象，遍历结束后返回
+
+1. ASTProperty
+    - 表现形式
+        - `one`
+        - `[one]` *（Indexed类型）*
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            调用`getProperty()`对第一个子节点求值，结果作为name传入`OgnlRuntime.getProperty()`，返回执行结果
+
+        - `protected void setValueBody(OgnlContext, Object, Object)`
+
+            调用`OgnlRuntime.setProperty()`方法
+
+        - `public boolean isNodeSimpleProperty(OgnlContext)`
+
+            返回第一个子节点的`isConstant()`结果
+
+1. ASTSelect
+    - 表现形式
+        - `{? one }`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则放入ArrayList对象，遍历结束后返回ArrayList
+
+1. ASTSelectFirst
+    - 表现形式
+        - `{^ one }`
+    - 实现/重写方法
+        - `protected void getValueBody(OgnlContext, Object)`
+
+            遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则放入ArrayList对象并跳出遍历，遍历结束后返回ArrayList
+
+1. ASTSelectLast
+    - 表现形式
+        - `{$ one }`
+    - 实现/重写方法
+        - `protected void getValueBody(OgnlContext, Object)`
+
+            遍历`ElementsAccessor.getElements()`结果，依次作为source传入第一个子节点计算，结果通过`OgnlOps.booleanValue()`判断真假，真则清空ArrayList对象并放入，遍历结束后返回ArrayList
+
+1. ASTSequence
+    - 表现形式
+        - `one, two`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算，返回最后一个子节点的计算结果
+
+        - `protected Object setValueBody(OgnlContext, Object, Object)`
+
+            遍历最后一个子节点外的其他子节点计算，调用最后一个子节点的`setValue()`方法
+
+1. ASTStaticField
+    - 表现形式
+        - `@one@two`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            调用`OgnlRuntime.getStaticField()`方法
+
+        - `public boolean isNodeConstant(OgnlContext)`
+
+            如果字段名称为『class』或类是Enum类型，直接返回`true`，否则通过反射判断是否为静态字段，返回判断结果
+
+1. ASTStaticMethod
+    - 表现形式
+        - `@one@two()` *（无参方法）*
+        - `@one@two(three, four)` *（含参方法）*
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            遍历子节点计算，结果放入args数组变量，并传入`OgnlRuntime.callStaticMethod()`方法，返回执行结果
+
+1. ASTVarRef
+    - 表现形式
+        - `#one`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            调用`OgnlContext.get()`方法
+
+        - `protected void getValueBody(OgnlContext, Object, Object)`
+
+            调用`OgnlContext.set()`方法
+
+1. ASTRootVarRef
+    - 表现形式
+        - `#root`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            调用`OgnlContext.getRoot()`方法
+
+        - `protected void setValueBody(OgnlContext, Object, Object)`
+
+            调用`OgnlContext.setRoot()`方法
+
+1. ASTThisVarRef
+    - 表现形式
+        - `#this`
+    - 实现/重写方法
+        - `protected Object getValueBody(OgnlContext, Object)`
+
+            调用`OgnlContext.getCurrentObject()`方法
+
+        - `protected void setValueBody(OgnlContext, Object, Object)`
+
+            调用`OgnlContext.setCurrentObject()`方法
 
 *（ASTNode中的ExpressionNode和它的子类，表示的是各种运算、关系表达式，对本文结论的影响不是特别大，因此就先搁置不再进行仔细分析了，感兴趣的同学继续加油努力，可以考虑共享成果:)）*
 
@@ -616,93 +782,93 @@ OGNL中大致分为Method、Property和Elements三类Accessor，而XWork主要�
 
 还是从爸爸开始：
 
-- _PropertyAccessor_
-  - 类型
-    - 接口
-  - 主要方法
-    - `Object getProperty(Map, Object, Object)`
-    - `void setProperty(Map, Object, Object, Object)`
-- _MethodAccessor_
-  - 类型
-    - 接口
-  - 主要方法
-    - `Object callStaticMethod(Map, Class, String, Object[])`
-    - `Object callMethod(Map, Object, String, Object[])`
-- ObjectPropertyAccessor
-  - 类型
-    - 实现了PropertyAccessor
-  - 主要方法
-    - `public Object getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-    - `public Class getPropertyClass(OgnlContext, Object, Object)`
-- ObjectMethodAccessor
-  - 类型
-    - 实现了MethodAccessor
-  - 主要方法
-    - `public Object callStaticMethod(Map, Class, String, Object[])`
-    - `public Object callMethod(Map, Object, String, Object[])`
+1. _PropertyAccessor_
+    - 类型
+        - 接口
+    - 主要方法
+        - `Object getProperty(Map, Object, Object)`
+        - `void setProperty(Map, Object, Object, Object)`
+1. _MethodAccessor_
+    - 类型
+        - 接口
+    - 主要方法
+        - `Object callStaticMethod(Map, Class, String, Object[])`
+        - `Object callMethod(Map, Object, String, Object[])`
+1. ObjectPropertyAccessor
+    - 类型
+        - 实现了PropertyAccessor
+    - 主要方法
+        - `public Object getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+        - `public Class getPropertyClass(OgnlContext, Object, Object)`
+1. ObjectMethodAccessor
+    - 类型
+        - 实现了MethodAccessor
+    - 主要方法
+        - `public Object callStaticMethod(Map, Class, String, Object[])`
+        - `public Object callMethod(Map, Object, String, Object[])`
 
 一小波儿子们：
 
-- CompoundRootAccessor
-  - 类型
-    - 实现了PropertyAccessor、MethodAccessor
-  - 实现/重写方法
-    - `public void getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-    - `public Object callMethod(Map, Object, String, Object[])`
-    - `public Object callStaticMethod(Map, Class, String, Object[])`
-- ObjectAccessor
-  - 类型
-    - 型继承于ObjectPropertyAccessor
-  - 实现/重写方法
-    - `public void getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-- ObjectProxyPropertyAccessor
-  - 类型
-    - 实现了PropertyAccessor
-  - 实现/重写方法
-    - `public void getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkCollectionPropertyAccessor
-  - 类型
-    - 继承于SetPropertyAccessor *（继承于ObjectPropertyAccessor）*
-  - 实现/重写方法
-    - `public void getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkEnumerationAccessor
-  - 类型
-    - 继承于EnumerationPropertyAccessor *（继承于ObjectPropertyAccessor）*
-  - 实现/重写方法
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkIteratorPropertyAccessor
-  - 类型
-    - 继承于IteratorPropertyAccessor *（继承于ObjectPropertyAccessor）*
-  - 实现/重写方法
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkListPropertyAccessor
-  - 类型
-    - 继承于ListPropertyAccessor *（继承于ObjectPropertyAccessor，实现了PropertyAccessor）*
-  - 实现/重写方法
-    - `public Object getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkMapPropertyAccessor
-  - 类型
-    - 继承于MapPropertyAccessor *（实现了PropertyAccessor）*
-  - 实现/重写方法
-    - `public Object getProperty(Map, Object, Object)`
-    - `public void setProperty(Map, Object, Object, Object)`
-- XWorkMethodAccessor
-  - 类型
-    - 继承于ObjectMethodAccessor *（实现了MethodAccessor）*
-  - 实现/重写方法
-    - `public Object callMethod(Map, Object, String, Object[])`
-    - `public Object callStaticMethod(Map, Class, String, Object[])`
-- XWorkObjectPropertyAccessor
-  - 类型
-    - 继承于ObjectPropertyAccessor
-  - 实现/重写方法
-    - `public Object getProperty(Map, Object, Object)`
+1. CompoundRootAccessor
+    - 类型
+        - 实现了PropertyAccessor、MethodAccessor
+    - 实现/重写方法
+        - `public void getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+        - `public Object callMethod(Map, Object, String, Object[])`
+        - `public Object callStaticMethod(Map, Class, String, Object[])`
+1. ObjectAccessor
+    - 类型
+        - 型继承于ObjectPropertyAccessor
+    - 实现/重写方法
+        - `public void getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+1. ObjectProxyPropertyAccessor
+    - 类型
+        - 实现了PropertyAccessor
+    - 实现/重写方法
+        - `public void getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkCollectionPropertyAccessor
+    - 类型
+        - 继承于SetPropertyAccessor *（继承于ObjectPropertyAccessor）*
+    - 实现/重写方法
+        - `public void getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkEnumerationAccessor
+    - 类型
+        - 继承于EnumerationPropertyAccessor *（继承于ObjectPropertyAccessor）*
+    - 实现/重写方法
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkIteratorPropertyAccessor
+    - 类型
+        - 继承于IteratorPropertyAccessor *（继承于ObjectPropertyAccessor）*
+    - 实现/重写方法
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkListPropertyAccessor
+    - 类型
+        - 继承于ListPropertyAccessor *（继承于ObjectPropertyAccessor，实现了PropertyAccessor）*
+    - 实现/重写方法
+        - `public Object getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkMapPropertyAccessor
+    - 类型
+        - 继承于MapPropertyAccessor *（实现了PropertyAccessor）*
+    - 实现/重写方法
+        - `public Object getProperty(Map, Object, Object)`
+        - `public void setProperty(Map, Object, Object, Object)`
+1. XWorkMethodAccessor
+    - 类型
+        - 继承于ObjectMethodAccessor *（实现了MethodAccessor）*
+    - 实现/重写方法
+        - `public Object callMethod(Map, Object, String, Object[])`
+        - `public Object callStaticMethod(Map, Class, String, Object[])`
+1. XWorkObjectPropertyAccessor
+    - 类型
+        - 继承于ObjectPropertyAccessor
+    - 实现/重写方法
+        - `public Object getProperty(Map, Object, Object)`
 
 ### 设置和获取
 
@@ -710,29 +876,29 @@ OGNL中大致分为Method、Property和Elements三类Accessor，而XWork主要�
 
 当然，在上述过程中，只设置了一个：
 
-- PropertyAccessor
-  - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
+1. PropertyAccessor
+    - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
 
 而OgnlRuntime会为常见数据类型设置对应的Accessor *（OGNL原生）* ，这是OgnlRuntime类初始化阶段的工作，基于Java的类加载机制可知，它将会在上述过程中的第一次`OgnlRuntime.setPropertyAccessor()`之前完成。
 
 当XWork框架初始化流程继续执行到`StrutsObjectFactory.buildInterceptor()`方法时，又调用了`ObjectFactory.buildBean()`方法，后者也触发了`OgnlValueStackFactory.setContainer()`方法，进行了下面的设置 *（实际调用链较长，只描述关键点，感兴趣的可以跟踪一下）* ：
 
-- PropertyAccessor
-  - `java.util.Enumeration` -> `XWorkEnumerationAccessor`
-  - `java.util.ArrayList` -> `XWorkListPropertyAccessor`
-  - `java.util.Iterator` -> `XWorkIteratorPropertyAccessor`
-  - `java.lang.Object` -> `ObjectAccessor`
-  - `java.util.Map` -> `XWorkMapPropertyAccessor`
-  - `java.util.List` -> `XWorkListPropertyAccessor`
-  - `java.util.HashSet` -> `XWorkCollectionPropertyAccessor`
-  - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
-  - `java.util.Set` -> `XWorkCollectionPropertyAccessor`
-  - `java.util.HashMap` -> `XWorkMapPropertyAccessor`
-  - `java.util.Collection` -> `XWorkCollectionPropertyAccessor`
-  - `com.opensymphony.xwork2.ognl.ObjectProxy` -> `ObjectProxyPropertyAccessor`
-- MethodAccessor
-  - `java.lang.Object` -> `XWorkMethodAccessor`
-  - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
+1. PropertyAccessor
+    - `java.util.Enumeration` -> `XWorkEnumerationAccessor`
+    - `java.util.ArrayList` -> `XWorkListPropertyAccessor`
+    - `java.util.Iterator` -> `XWorkIteratorPropertyAccessor`
+    - `java.lang.Object` -> `ObjectAccessor`
+    - `java.util.Map` -> `XWorkMapPropertyAccessor`
+    - `java.util.List` -> `XWorkListPropertyAccessor`
+    - `java.util.HashSet` -> `XWorkCollectionPropertyAccessor`
+    - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
+    - `java.util.Set` -> `XWorkCollectionPropertyAccessor`
+    - `java.util.HashMap` -> `XWorkMapPropertyAccessor`
+    - `java.util.Collection` -> `XWorkCollectionPropertyAccessor`
+    - `com.opensymphony.xwork2.ognl.ObjectProxy` -> `ObjectProxyPropertyAccessor`
+1. MethodAccessor
+    - `java.lang.Object` -> `XWorkMethodAccessor`
+    - `com.opensymphony.xwork2.util.CompoundRoot` -> `CompoundRootAccessor`
 
 至此，Accessor的设置工作结束。
 

@@ -23,7 +23,11 @@ WAF *（Web Application Firewall）* 通常被前置于Web服务器进行部署�
 
 在基于特征的WAF中可以定义特征，就和你熟知的Web攻击相似的模式或特征一样，可以定义一堆的特征匹配模式来阻断这些恶意流量。
 
-举个例子：`<svg><script>alert&grave;1&grave;<p>`
+举个例子：
+
+```html
+<svg><script>alert&grave;1&grave;<p>
+```
 
 这是一种XSS攻击的Payload模型，所有基于这种模型的攻击一般都会包含`<script>`字符串，因此可以定义一个特征来阻断所有包含该字符串的Web请求流量。那么，针对这种攻击模型，同样也可以衍生出如下2到3个特征定义：
 

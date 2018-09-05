@@ -149,7 +149,7 @@ MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个
 
 为了验证Driver层主要逻辑是否通用，我们再简单分析一下PHP默认的MySQL协议实现 *（由于PHP 7版本移除了MySQL相关默认扩展，本文选择了PHP stable 5.6.32版本中的mysqli扩展，并使用官方推荐的原生驱动mysqlnd）* 。由于MySQL扩展需要遵循PHP定义的扩展实现规则，需要了解相关的前置知识才能方便阅读，因此这里不跟踪代码细节，只简单描述一下流程。前面的数据库连接就省略了，直接从查询开始：
 
-1. `mysqli_nonapi`中定义的`mysqli_query()`会调用mysqlnd驱动的`mysql_real_query()`*（该函数是一个调用了`mysqlnd_query()`的宏，而`mysqlnd_query()`则是一个调用了`MYSQLND_CONN_DATA.query()`处理的宏）*
+1. `mysqli_nonapi`中定义的`mysqli_query()`会调用mysqlnd驱动的`mysql_real_query()` *（该函数是一个调用了`mysqlnd_query()`的宏，而`mysqlnd_query()`则是一个调用了`MYSQLND_CONN_DATA.query()`处理的宏）*
     - `MYSQLND_CONN_DATA.send_query()`中调用`simple_command()`执行命令
     - `simple_command_send_request()`封包成`MYSQLND_PACKET_COMMAND`对象
     - `MYSQLND_NET.send_ex()`调用`network_write_ex()`发包
@@ -158,42 +158,42 @@ MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个
 
 ### 关于Escape
 
-大家都知道，PHP在mysqli扩展中实现了`mysqli_real_escape_string()`*（`mysqli_escape_string()`为其别名）*，可以对部分特殊字符进行转义，但需要开发者主动调用。
+大家都知道，PHP在mysqli扩展中实现了`mysqli_real_escape_string()` *（`mysqli_escape_string()`为其别名）* ，可以对部分特殊字符进行转义，但需要开发者主动调用。
 
 mysqlnd驱动中提供了两种特殊字符处理方式：
 
 1. `mysqlnd_cset_escape_slashes()`，默认调用
     - 使用`\`字符对部分特殊字符进行转义
-    ```cpp
-    switch (*escapestr) {
-        case 0:
-            esc = '0';
-            break;
-        case '\n':
-            esc = 'n';
-            break;
-        case '\r':
-            esc = 'r';
-            break;
-        case '\\':
-        case '\'':
-        case '"':
-            esc = *escapestr;
-            break;
-        case '\032':
-            esc = 'Z';
-            break;
-    }
+        ```cpp
+        switch (*escapestr) {
+            case 0:
+                esc = '0';
+                break;
+            case '\n':
+                esc = 'n';
+                break;
+            case '\r':
+                esc = 'r';
+                break;
+            case '\\':
+            case '\'':
+            case '"':
+                esc = *escapestr;
+                break;
+            case '\032':
+                esc = 'Z';
+                break;
+        }
 
-    // IGNORE ...
-
-    if (esc) {
         // IGNORE ...
 
-        *newstr++ = '\\';
-        *newstr++ = esc;
-    }
-    ```
+        if (esc) {
+            // IGNORE ...
+
+            *newstr++ = '\\';
+            *newstr++ = esc;
+        }
+        ```
 1. `mysqlnd_cset_escape_quotes()`，当服务器响应状态中包含`SERVER_STATUS_NO_BACKSLASH_ESCAPES` *（`0x200`）* 时被调用
     - 将`'`字符转义为`''`，以消除字符串中单引号对SQL语句结构和语义的影响
 

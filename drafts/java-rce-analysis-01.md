@@ -19,7 +19,7 @@
 
 > 管中窥豹：千疮百孔的Struts2，与它最爱的OGNL表达式
 
-Struts2历年来的RCE还算是挺『[丰富](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)』的，不算黑，毕竟是曾经的经典，漏洞应该促使其概念革新技术进步，只让我们稍作整理 *（由于篇幅原因，关于漏洞描述和一些其他介绍性的信息本文就直接忽略了，有兴趣的可以超链接到官方查阅）*。
+Struts2历年来的RCE还算是挺『[丰富](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)』的，不算黑，毕竟是曾经的经典，漏洞应该促使其概念革新技术进步，只让我们稍作整理 *（由于篇幅原因，关于漏洞描述和一些其他介绍性的信息本文就直接忽略了，有兴趣的可以超链接到官方查阅）* 。
 
 ### [S2-001](https://cwiki.apache.org/confluence/display/WW/S2-001)
 
@@ -61,7 +61,7 @@ n. TODO：确认是否必须为struts标签或实现validate方法即可
 
 作用域
 
-1. 任意action*（struts-default.xml -> ParametersInterceptor）*
+1. 任意action *（struts-default.xml -> ParametersInterceptor）*
 
 底层G点
 

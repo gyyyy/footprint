@@ -200,11 +200,7 @@ https://gist.github.com/staaldraad/01415b990939494879b4
 
 #### **有哪些好用的工具可以检测XXE注入漏洞？**
 
-- XXE注入Payload在线生成工具
-    https://buer.haus/xxegen/
-- 生成XXE注入测试文件
-    https://github.com/BuffaloWill/oxml_xxe/
-- XXE盲注轻量级服务
-    https://github.com/staaldraad/xxeserv/
-- Java应用XXE注入漏洞检测工具
-    https://github.com/ssexxe/XXEBugFind/
+- [XXE注入Payload在线生成工具](https://buer.haus/xxegen/)
+- [生成XXE注入测试文件](https://github.com/BuffaloWill/oxml_xxe/)
+- [XXE盲注轻量级服务](https://github.com/staaldraad/xxeserv/)
+- [Java应用XXE注入漏洞检测工具](https://github.com/ssexxe/XXEBugFind/)
