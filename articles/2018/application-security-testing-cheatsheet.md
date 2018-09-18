@@ -5,7 +5,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1537248453-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 最近在做灰盒测试相关的研究时，学习了一些圈内主流的测试技术方案，整理记录在这里预防自己的健忘症。刚巧在文章完成之日看到[@张欧]()大佬在SSC的议题《IAST交互式应用安全测试技术实践》，对自动化安全测试方向感兴趣的小伙伴可以多关注交流。 </sub>
+<sub>* 最近在做灰盒测试相关的研究时，学习了一些圈内主流的测试技术方案，整理记录在这里预防自己的健忘症。刚巧在文章完成之日也看到[@张欧](https://security.alipay.com/对不起我不知道大佬的主页)大佬在SSC的议题《IAST交互式应用安全测试技术实践》，对自动化安全测试方向感兴趣的小伙伴可以多关注交流。 </sub>
 
 ## 主流测试技术
 
