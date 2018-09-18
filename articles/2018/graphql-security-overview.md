@@ -69,7 +69,7 @@ Let's Go!
 
 *（想要详细了解的同学请阅读GraphQL官方文档）*
 
-### GraphQL VS. RESTful
+### GraphQL vs. RESTful
 
 GraphQL没有过多依赖HTTP协议，它有一套自己的解析引擎来帮助前后端使用GraphQL查询语法。同时它是单路由形态，查询内容完全根据前端请求对象和字段而定，前后端分离较明显。
 

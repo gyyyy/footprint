@@ -23,7 +23,7 @@
     - 被Gartner称为『next-generation modern web and mobile applications require a combination of SAST and DAST techniques』
     - 被很多大佬用于实现自动化漏洞挖掘工具，甚至甲方企业级应用安全审计工具，很多漏洞扫描工具也逐渐向此技术架构进行迁移
 
-## DAST VS. SAST
+## DAST vs. SAST
 
 所有安全测试最重要的属性之一就是覆盖率。
 
@@ -39,7 +39,7 @@ DAST依赖于暴露URL和输入的发现，来尽可能多的为测试提供攻�
 
 SAST则更专注于应用内部中调用关系、控制流程，以及数据流向，对于逻辑分支的覆盖率更具优势。
 
-## IAST VS. SAST and DAST
+## IAST vs. SAST and DAST
 
 DAST被圈内一致诟病的问题是它的误报较高 *（攻击结果判定也是一个值得研究课题）*。
 
