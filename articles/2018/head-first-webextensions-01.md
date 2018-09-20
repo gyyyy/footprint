@@ -19,7 +19,7 @@
 
 所以我们得学会它，以后自己写:)。
 
-本文将以Firefox扩展为例，分上下两篇来介绍WebExtensions开发技巧。上篇以Github上一个开源的Hackbar *（不知道是不是真的）* 源码分析为主线，串讲WebExtensions基础知识及其API；下篇则会运用这些内容实战一个小插件 *（随缘更新，佛系编程）* 。
+本文将以Firefox扩展为例，分上下两篇来介绍WebExtensions开发技巧。上篇以Github上一个开源的Hackbar *（不知道是不是真的）* 源代码分析为主线，串讲WebExtensions基础知识及其API；下篇则会运用这些内容实战一个小插件 *（随缘更新，佛系编程）* 。
 
 用了这么久的Hackbar会不会好奇它是怎么实现的？别着急，马上进入正题。
 
@@ -29,7 +29,7 @@
 
 使用WebExtensions可以很方便的开发出跨浏览器扩展 *（当然，各浏览器之间的API存在少量兼容问题）* 。
 
-## Hackbar源码分析
+## Hackbar源代码分析
 
 先放张图，看看[HackBar for Firefox Quantum](https://github.com/khoiasd/hackbar/)这个项目的目录结构 *（请忽略它少得可怜的Star数）* ：
 
@@ -434,7 +434,7 @@ function getPostData(e) {
 
 ## 结语
 
-本文通过对Hackbar的源码分析，大致介绍了WebExtensions技术在Firefox分支上的基础知识，希望对有需要的同学有所帮助，欢迎指正。
+本文通过对Hackbar的源代码分析，大致介绍了WebExtensions技术在Firefox分支上的基础知识，希望对有需要的同学有所帮助，欢迎指正。
 
 下篇文章将会运用学到的这些技术进行一次实战开发，不过动笔时间不定。
 

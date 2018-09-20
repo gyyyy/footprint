@@ -140,7 +140,7 @@ struct OP_QUERY {
 
 被Boost收录整合的[Asio](https://github.com/chriskohlhoff/asio/)是一个跨平台的含网络通信在内的同异步I/O编程相关的C++库。
 
-不过对于本文的读者来说，并不需要去关心MongoDB底层各个节点的具体实现细节。我们之后的内容还是以MongoDB 3.6版本的技术架构和特性来分析，虽然不一定切合目前的主流版本，但它是MongoDB目前的技术趋势，而对`legacy`等老版本所支持的流程，有兴趣的也可以自己去看看[相关源码](https://github.com/mongodb/mongo/)。
+不过对于本文的读者来说，并不需要去关心MongoDB底层各个节点的具体实现细节。我们之后的内容还是以MongoDB 3.6版本的技术架构和特性来分析，虽然不一定切合目前的主流版本，但它是MongoDB目前的技术趋势，而对`legacy`等老版本所支持的流程，有兴趣的也可以自己去看看[相关源代码](https://github.com/mongodb/mongo/)。
 
 MongoDB服务器接收到客户端的连接请求后，会回调`TransportLayerASIO`中定义的`acceptCb()`，将当前的连接会话扔给`ServiceEntryPointMongod.startSession()`处理，根据会话创建并启动状态机`ServiceStateMachine`，该状态机用于描述每个客户端连接的生命周期，其中对生命周期的定义如下：
 

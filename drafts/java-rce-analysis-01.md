@@ -470,7 +470,7 @@ S2-014
     - 直接解析 *（含OGNL表达式求值）*
     - 二次解析 *（逻辑多次或递归）*
 
-根据上述共性，以及对OGNL源码的深度分析，可以得出关于OGNL的特性：
+根据上述共性，以及对OGNL源代码的深度分析，可以得出关于OGNL的特性：
 
 1. `OgnlUtil.setValue()`和`OgnlUtil.getValue()`都会先对表达式进行编译解析 *（`OgnlUtil.compile()`）*
 

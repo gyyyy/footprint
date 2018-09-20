@@ -45,7 +45,7 @@ java -cp marshalsec-0.0.1-SNAPSHOT-all.jar marshalsec.<Marshaller> [-a] [-v] [-t
 
 ![04.png](apache-struts2-s2-052-rce/04.png)
 
-本文选择的是ImageIO，对应的gadget_type可以通过查看marshalsec的源码得到。
+本文选择的是ImageIO，对应的gadget_type可以通过查看marshalsec的源代码得到。
 
 ![05.png](apache-struts2-s2-052-rce/05.png)
 

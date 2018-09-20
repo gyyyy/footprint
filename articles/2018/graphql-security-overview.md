@@ -134,7 +134,7 @@ query GetAllUsers {
 }
 ```
 
-这里我通过[graphql-go/graphql](https://github.com/graphql-go/graphql/)的源码简单分析一下GraphQL的解析执行流程和内省机制，帮助大家加深理解：
+这里我通过[graphql-go/graphql](https://github.com/graphql-go/graphql/)的源代码简单分析一下GraphQL的解析执行流程和内省机制，帮助大家加深理解：
 
 1. GraphQL路由节点在拿到HTTP的请求参数后，创建`Params`对象，并调用`Do()`完成解析执行操作返回结果：
     ```go

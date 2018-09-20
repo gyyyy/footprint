@@ -258,7 +258,7 @@ SELECT * FROM table_A WHERE field_A LIKE '%=%' ESCAPE '='
 
 在上述第2点中提到Connector/J在伪预处理时部分依赖了Java语言的强类型特点，那么对于弱类型的PHP语言，mysqlnd并没有模拟实现客户端的伪预处理，而是直接走的预处理协议。
 
-为了严谨，我继续阅读了[MySQL Connector/NET](https://github.com/mysql/mysql-connector-net/)的预处理实现部分源码。驱动在调用`MySqlCommand.Prepare()`过程中，会通过`NativeDriver.PrepareStatement()`向MySQL服务器发送`PREPARE`指令数据包，即也是真正的预处理方式。
+为了严谨，我继续阅读了[MySQL Connector/NET](https://github.com/mysql/mysql-connector-net/)的预处理实现部分源代码。驱动在调用`MySqlCommand.Prepare()`过程中，会通过`NativeDriver.PrepareStatement()`向MySQL服务器发送`PREPARE`指令数据包，即也是真正的预处理方式。
 
 好吧，JDBC这朵奇葩。
 

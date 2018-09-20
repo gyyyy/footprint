@@ -70,7 +70,7 @@ CVE-2018-1260
 
 结合补丁对比分析得到的结论，我们可以搭建两种环境帮助对漏洞的理解和分析：
 
-1. spring-security-oauth源码调试环境
+1. spring-security-oauth源代码调试环境
     - 需要对Spring Security和Spring Security OAuth框架有一定的了解（原理和执行流程）
 1. spring-security-oauth示例项目环境
     - 参考先知上的[另一篇分析文章](https://xz.aliyun.com/t/2330)
