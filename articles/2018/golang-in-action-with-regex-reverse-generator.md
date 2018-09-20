@@ -266,43 +266,43 @@ case syntax.OpAlternate:
 
 `(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?`
 
-[regex-url](golang-in-action-with-regex-reverse-generator/regex-url.png)
+![regex-url](golang-in-action-with-regex-reverse-generator/regex-url.png)
 
 ### IP地址
 
 `(((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))\.){3}((\d{1,2})|(1\d{1,2})|(2[0-4]\d)|(25[0-5]))`
 
-[regex-ip](golang-in-action-with-regex-reverse-generator/regex-ip.png)
+![regex-ip](golang-in-action-with-regex-reverse-generator/regex-ip.png)
 
 ### E-Mail地址
 
 `[\w!#$%&'*+/=?^_{|}~-]+(?:\.[\w!#$%&'*+/=?^_{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?`
 
-[regex-email](golang-in-action-with-regex-reverse-generator/regex-email.png)
+![regex-email](golang-in-action-with-regex-reverse-generator/regex-email.png)
 
 ### 电话号码
 
 `(13[0-9]|14[579]|15[0-35-9]|16[6]|17[0135678]|18[0-9]|19[89])\d{8}`
 
-[regex-tel](golang-in-action-with-regex-reverse-generator/regex-tel.png)
+![regex-tel](golang-in-action-with-regex-reverse-generator/regex-tel.png)
 
 ### 身份证
 
 `(\d{6})(\d{4})(\d{2})(\d{2})(\d{3})([0-9]|X)`
 
-[regex-idcard](golang-in-action-with-regex-reverse-generator/regex-idcard.png)
+![regex-idcard](golang-in-action-with-regex-reverse-generator/regex-idcard.png)
 
 ### 日期时间
 
 `([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8])))`
 
-[regex-date](golang-in-action-with-regex-reverse-generator/regex-date.png)
+![regex-date](golang-in-action-with-regex-reverse-generator/regex-date.png)
 
 ### GUID
 
 `[0-9a-fA-F]{8}[-]?([0-9a-fA-F]{4}[-]?){3}[0-9a-fA-F]{12}`
 
-[regex-guid](golang-in-action-with-regex-reverse-generator/regex-guid.png)
+![regex-guid](golang-in-action-with-regex-reverse-generator/regex-guid.png)
 
 ## 参考
 
