@@ -97,7 +97,7 @@ case syntax.OpCharClass:
     if len(re.Rune)%2 != 0 || len(re.Rune) == 0 {
         break
     } else {
-        if re.Rune[0] == 0 && re.Rune[len(re.Rune)-1] == unicode.MaxRune { // [^a-z], replace with ascii printable characters
+        if re.Rune[0] == 0 && re.Rune[len(re.Rune)-1] == unicode.MaxRune {
             if re.Rune[1] >= 0x20 {
                 re.Rune[0] = 0x20
             }
@@ -256,7 +256,7 @@ case syntax.OpAlternate:
     generate(buf, re.Sub[rand.Intn(len(re.Sub))])
 ```
 
-将所有`case`放入`generate()`方法的`switch`块中，一个正则表达式反向生成器就基本完成了。
+将所有`case`放入`generate()`函数的`switch`块中，一个正则表达式反向生成器就基本完成了。
 
 ## 测试
 
