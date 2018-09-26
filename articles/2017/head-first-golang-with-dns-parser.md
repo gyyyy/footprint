@@ -1,6 +1,6 @@
 # DNS解析器，深入浅出Go语言
 
-![Category](https://img.shields.io/badge/category-security_research-blue.svg)
+![Category](https://img.shields.io/badge/category-security_develop-blue.svg)
 ![Research](https://img.shields.io/badge/research-web_security-blue.svg)
 ![Language](https://img.shields.io/badge/lang-go-blue.svg)
 ![Tag](https://img.shields.io/badge/tag-dns-green.svg)
