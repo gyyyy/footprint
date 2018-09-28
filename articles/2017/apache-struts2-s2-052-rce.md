@@ -35,9 +35,9 @@ CVE-2017-9805
 
 ## 构造PoC
 
-用[marshalsec工具](https://github.com/mbechler/marshalsec)生成Payload，工具简单使用方式如下：
+用[marshalsec工具](https://github.com/mbechler/marshalsec/)生成Payload，工具简单使用方式如下：
 
-```shell
+```sh
 java -cp marshalsec-0.0.1-SNAPSHOT-all.jar marshalsec.<Marshaller> [-a] [-v] [-t] [<gadget_type> [<arguments...>]]
 ```
 

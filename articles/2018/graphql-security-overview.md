@@ -320,7 +320,7 @@ app.listen({
 
 设置完成后，请求GraphQL接口需要先进行登录操作，然后在前端配置好认证请求头来访问GraphQL接口，以`curl`代替前端请求登录RESTful接口：
 
-```shell
+```sh
 curl -X POST http://localhost:4000/login -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' -d 'username=user1&password=123456'
 
 {"message":"登录成功","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7Il9pZCI6IjViNWU1NDcwN2YyZGIzMDI0YWJmOTY1NiIsInVzZXJuYW1lIjoidXNlcjEiLCJwYXNzd29yZCI6IiQyYSQwNSRqekROOGFQbEloRzJlT1A1ZW9JcVFPRzg1MWdBbWY0NG5iaXJaM0Y4NUdLZ3pVL3lVNmNFYSJ9LCJleHAiOjE1MzI5MTIyOTEsImlhdCI6MTUzMjkwODY5MX0.Uhd_EkKUEDkI9cdnYlOC7wSYZdYLQLFCb01WhSBeTpY"}
@@ -628,7 +628,7 @@ query GetBlogs($blogId: ID, $systemType: String!) {
 }
 ```
 
-避免此问题我们需要在GraphQL服务器上限制查询深度，同时在设计GraphQL接口时应尽量避免出现此类问题。仍然以Node.js为例，[graphql-depth-limit](https://github.com/stems/graphql-depth-limit)就可以解决这样的问题。
+避免此问题我们需要在GraphQL服务器上限制查询深度，同时在设计GraphQL接口时应尽量避免出现此类问题。仍然以Node.js为例，[graphql-depth-limit](https://github.com/stems/graphql-depth-limit/)就可以解决这样的问题。
 
 ```js
 // ...
