@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1538058606-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 在尝试一些新的梯子方案时，遇到了性能上的瓶颈，刚好Shadowsocks官方有开源两个Go版源代码，于是利用业余时间分别对它们的主流程进行了简单分析，Shadowsocks加密传输的原理大家都懂，看看它是怎么实现的。至于ShadowsocksR甚至ShadowsocksX嘛，有兴趣的自己去看啦。</sub>
+<sub>* 在研究尝试正向代理方案时，遇到了性能上的瓶颈，刚好Shadowsocks官方有开源两个Go版源代码，于是利用业余时间分别对它们的主流程进行了简单分析，Shadowsocks加密传输的原理大家都懂，看看它是怎么实现的。至于ShadowsocksR甚至ShadowsocksX嘛，有兴趣的自己去看啦。</sub>
 
 ## shadowsocks-go
 
