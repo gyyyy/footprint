@@ -320,7 +320,7 @@ shadowsocks2 -c 'ss://AEAD_CHACHA20_POLY1305:your-password@server_address:8488' 
 
 1. 通过使用接口、组合和回调函数等设计，使源代码结构更清晰合理，便于阅读理解
 1. 减少外部依赖，只包含经过验证的现代密码学加密算法
-1. 加速SOCKS5协议的解析，不判断多余字段，并增加了UDP ASSOCIATE请求类型的解析响应
+1. 加速SOCKS5协议的解析，不判断处理多余字段，并增加了UDP ASSOCIATE请求类型的解析响应
 1. 支持TCP隧道 *（如用于iperf3网络带宽测试）* 和UDP隧道 *（如用于DNS数据包中继）*
 1. 支持Linux Netfilter重定向
 
