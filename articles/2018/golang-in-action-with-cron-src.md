@@ -186,10 +186,11 @@ c.add <- entry
 当`run()`中的`add`通道接收到值后，停止计时器，计算当前新任务的下次执行时间，将它放入任务列表中 *（随后执行的下次循环，将会对所有任务重新排序）* ：
 
 ```go
-timer.Stop()
-now = c.now()
-newEntry.Next = newEntry.Schedule.Next(now)
-c.entries = append(c.entries, newEntry)
+case newEntry := <-c.add:
+    timer.Stop()
+    now = c.now()
+    newEntry.Next = newEntry.Schedule.Next(now)
+    c.entries = append(c.entries, newEntry)
 ```
 
 ## 查看
