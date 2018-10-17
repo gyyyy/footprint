@@ -1,4 +1,4 @@
-# Shadowsocks源代码浅析，Go语言实战
+# 正向代理之Shadowsocks源代码浅析，Go语言实战
 
 ![Category](https://img.shields.io/badge/category-security_develop-blue.svg)
 ![Research](https://img.shields.io/badge/research-web_security-blue.svg)
@@ -312,7 +312,7 @@ shadowsocks2 -c 'ss://AEAD_CHACHA20_POLY1305:your-password@server_address:8488' 
 
 与服务端通信过程基本一致。
 
-#### 特点
+## 总结
 
 为什么第二版被官方冠以『Next-generation』的称号呢？
 
