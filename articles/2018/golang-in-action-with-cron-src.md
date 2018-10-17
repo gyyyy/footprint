@@ -120,15 +120,16 @@ for {
 当`run()`中的`timer.C`通道接收到值后，遍历任务列表，多线程执行所有下次执行时间在当前时间之前的任务：
 
 ```go
-now = now.In(c.location)
-for _, e := range c.entries {
-    if e.Next.After(now) || e.Next.IsZero() {
-        break
+case now = <-timer.C:
+    now = now.In(c.location)
+    for _, e := range c.entries {
+        if e.Next.After(now) || e.Next.IsZero() {
+            break
+        }
+        go c.runWithRecovery(e.Job)
+        e.Prev = e.Next
+        e.Next = e.Schedule.Next(now)
     }
-    go c.runWithRecovery(e.Job)
-    e.Prev = e.Next
-    e.Next = e.Schedule.Next(now)
-}
 ```
 
 ## 新增
@@ -193,7 +194,7 @@ c.entries = append(c.entries, newEntry)
 
 ## 查看
 
-如果`Cron`已启动，则给`snapshot`放进一个信号 *（`nil`空值当然可以作为信号量）*，否则直接调用`entrySnapshot()`返回所有`Entry`的副本：
+如果`Cron`已启动，则给`snapshot`通道放进一个信号 *（空值`nil`当然也可以作为信号量）* 阻塞等待执行结果，否则直接调用`entrySnapshot()`返回所有`Entry`的副本：
 
 ```go
 func (c *Cron) Entries() []*Entry {
@@ -204,6 +205,14 @@ func (c *Cron) Entries() []*Entry {
     }
     return c.entrySnapshot()
 }
+```
+
+当`run()`中的`snapshot`通道接收到值后，将`entrySnapshot()`的执行结果又重新放入`snapshot`中还回去：
+
+```go
+case <-c.snapshot:
+    c.snapshot <- c.entrySnapshot()
+    continue
 ```
 
 ## 停止
