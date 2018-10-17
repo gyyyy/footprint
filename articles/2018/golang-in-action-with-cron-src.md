@@ -133,7 +133,7 @@ for _, e := range c.entries {
 
 ## 新增
 
-`AddFunc()`会将传入的任务执行函数包裹一个`Job`接口标准的`Run()`函数，再调用`AddJob()`按照默认标准解析表达式字符串获得`Schedule`对象：
+`AddFunc()`会将传入的任务执行函数包裹一个`Job`接口标准的`Run()`函数，再调用`AddJob()`按照规范解析表达式字符串获得`Schedule`对象：
 
 ```go
 schedule, err := Parse(spec)
