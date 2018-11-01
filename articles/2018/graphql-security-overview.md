@@ -261,7 +261,7 @@ graphql.Field{
 // ...
 ```
 
-接着，他又用上面的`__type`做了一次内省，很好，废弃字段查不到了，通知前端回滚查询语句，问题解决，下班回家 *（GraphQL的优势立刻凸显出来）* 。
+接着，他又用上面的`__type`做了一次内省，很好，废弃字段查不到了，通知前端回滚查询语句，问题解决，下班回家 *（GraphQL的优势立刻突显出来）* 。
 
 熟悉安全攻防套路的同学都知道，很多的攻击方式 *（尤其在Web安全中）* 都是利用了开发、测试、运维的知识盲点 *（如果你想问这些盲点的产生原因，我只能说是因为正常情况下根本用不到，所以不深入研究基本不会去刻意关注）* 。如果开发者没有很仔细的阅读GraphQL官方文档，特别是内省这一章节的内容，就可能不知道，通过指定`includeDeprecated`参数为`true`，`__type`仍然可以将废弃字段暴露出来：
 
@@ -466,9 +466,9 @@ users: (root, args, context) => {
 前端使用变量构建带参查询语句：
 
 ```js
-const id = props.match.params.id;
+const name = props.match.params.name;
 const queryUser = gql`{
-    user(_id: ${id}) {
+    user(username: ${name}) {
         _id
         username
         email
@@ -476,18 +476,18 @@ const queryUser = gql`{
 }`
 ```
 
-`name`的值会在发出GraphQL查询请求前就被拼接进完整的GraphQL语句中。攻击者对`name`注入恶意语句：
+`name`的值会在发出GraphQL查询请求前就被拼接进完整的GraphQL语句中。攻击者对其注入恶意语句：
 
 ```plain
--1)%7B_id%7Dhack%3Auser(username%3A"admin")%7Bpassword%23
+"")%7Busername%7Dhack%3Auser(username%3A"admin")%7Bpassword%23
 ```
 
 可能GraphQL语句的结构就被改变了：
 
 ```js
 {
-    user(_id: -1) {
-        _id
+    user(username: "") {
+        username
     }
     hack: user(username: "admin") {
         password #) {
