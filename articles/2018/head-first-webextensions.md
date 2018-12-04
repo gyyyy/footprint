@@ -33,7 +33,7 @@
 
 先放张图，看看[HackBar for Firefox Quantum](https://github.com/khoiasd/hackbar/)这个项目的目录结构 *（请忽略它少得可怜的Star数）* ：
 
-![hackbar-dir-structure.png](head-first-webextensions-01/hackbar-dir-structure.png)
+![hackbar-dir-structure.png](head-first-webextensions/hackbar-dir-structure.png)
 
 ### manifest.json
 
@@ -129,7 +129,7 @@ browser.devtools.panels.create(
 
 对于hackbar-panel.html的一堆HTML以及它的CSS样式就不详细展开了，直接上张图看看最终效果：
 
-![hackbar-devtools-panel.png](head-first-webextensions-01/hackbar-devtools-panel.png)
+![hackbar-devtools-panel.png](head-first-webextensions/hackbar-devtools-panel.png)
 
 ```html
 <script src="js/jquery-3.2.1.min.js"></script>
@@ -231,7 +231,7 @@ function getCurrentTabUrl(sendResponse){
 
 再举个官方文档中的栗子捋一捋：
 
-![devtools-content-scripts.png](head-first-webextensions-01/devtools-content-scripts.png)
+![devtools-content-scripts.png](head-first-webextensions/devtools-content-scripts.png)
 
 由于开发者工具面板的脚本是无法直接与内容脚本通信的，因此需要先与后台脚本建立长连接，再通过后台脚本将消息中转到内容脚本。
 
@@ -398,7 +398,7 @@ function getPostData(e) {
 
 `webRequest`API包含从请求发起到响应结束过程中所有阶段的事件，官方文档中对它流程的描述如下：
 
-![webrequest-flow.png](head-first-webextensions-01\webrequest-flow.png)
+![webrequest-flow.png](head-first-webextensions\webrequest-flow.png)
 
 官方文档中建议，当你需要修改请求响应数据时，可以在监听器中使用额外选项`blocking`，并监听以下事件：
 
@@ -436,7 +436,7 @@ function getPostData(e) {
 
 本文通过对Hackbar的源代码分析，大致介绍了WebExtensions技术在Firefox分支上的基础知识，希望对有需要的同学有所帮助，欢迎指正。
 
-下篇文章将会运用学到的这些技术进行一次实战开发，不过动笔时间不定。
+之后将会运用学到的这些技术，结合其他逻辑组件一起，完成一篇简单漏洞扫描器的实战开发文章，不过动笔时间不定。
 
 感谢你的阅读。
 
