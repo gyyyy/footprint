@@ -167,7 +167,7 @@ SAXParser在完成版本检测后，会调用`XMLDocumentFragmentScannerImpl`的
 
 ### 互动问答
 
-#### **如何甄别一个XML实体攻击漏洞？**
+#### 如何甄别一个XML实体攻击漏洞？
 
 对于攻击方而言，想要甄别应用系统是否存在XXE注入漏洞，在前面的挖掘思路部分就已经提到过了，不过为了照顾刚入门的小伙伴，只给出了常规的测试流程，这里我们可以再稍微展开聊一下：
 
@@ -179,7 +179,7 @@ SAXParser在完成版本检测后，会调用`XMLDocumentFragmentScannerImpl`的
 
 对于防守方而言，其实大部分的业务需求都不需要使用到XML外部实体，因此在请求数据包中出现XML外部实体声明，就值得进一步对请求方的行为进行审计分析，大致筛选出是否遭受了XXE注入攻击。
 
-#### **利用XXE注入漏洞读取任意文件，在没有回显的情况下，如何读取？其实就是想了解一下Blind XXE。**
+#### 利用XXE注入漏洞读取任意文件，在没有回显的情况下，如何读取？
 
 对于XML来说，XXE属于标准语法，所以只需要在实体的声明、引用，以及它的URI属性上做文章。
 
@@ -198,7 +198,7 @@ SAXParser在完成版本检测后，会调用`XMLDocumentFragmentScannerImpl`的
 
 https://gist.github.com/staaldraad/01415b990939494879b4
 
-#### **有哪些好用的工具可以检测XXE注入漏洞？**
+#### 有哪些好用的工具可以检测XXE注入漏洞？
 
 - [XXE注入Payload在线生成工具](https://buer.haus/xxegen/)
 - [生成XXE注入测试文件](https://github.com/BuffaloWill/oxml_xxe/)
