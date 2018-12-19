@@ -26,7 +26,7 @@
 - &lt;article month=05 day=29 title=&quot;[Web安全研究员是怎样炼成的？ <译><转>](articles/2018/so-you-want-to-be-a-web-security-researcher.md)&quot;/&gt;
 - &lt;article month=05 day=13 title=&quot;[Spring Security OAuth2远程代码执行（CVE-1260）漏洞分析](articles/2018/spring-security-oauth2-approval-rce.md)&quot;/&gt;
 - &lt;article month=05 day=11 title=&quot;[Spring Integration Zip不安全解压（CVE-1261）漏洞分析](articles/2018/spring-integration-zip-unsafe-unzip.md)&quot;/&gt;
-- &lt;article month=05 day=09 title=&quot;[深入浅出WebExtensions（上）](articles/2018/head-first-webextensions-01.md)&quot;/&gt;
+- &lt;article month=05 day=09 title=&quot;[深入浅出WebExtensions](articles/2018/head-first-webextensions.md)&quot;/&gt;
 - &lt;article month=02 day=06 title=&quot;[SQL和NoSQL注入浅析（下）](articles/2018/sql-vs-nosql-injection-02.md)&quot;/&gt;
 
 ### [2017年](articles/2017/)
