@@ -184,7 +184,7 @@ model.put("scopes", scopes);
 
 虽然`WhitelabelApprovalEndpoint.getAccessConfirmation()`配置了`@RequestMapping()`注解，可以访问/oauth/confirm_access直接进入该方法，但方法中判断并获取scopes是通过`model.get()`或`request.getAttribute()`，无法通过URL的请求参数对其传参赋值。
 
-简单介绍一下其相关流程。
+简单介绍一下其相关流程：
 
 1. 当客户端向授权服务器发起授权请求时 *（/oauth/authorize）* ，会将请求参数中`scope`的值转换为`Set`集合封装进`AuthorizationRequest`中，校验应用配置的Scopes是否为空或所有Scope都有效
 1. 授权服务器内部重定向请求至/oauth/confirm_access，之后的事就不用再多说了吧
@@ -193,7 +193,7 @@ model.put("scopes", scopes);
 
 http://domain.com/oauth/authorize?client_id=[client]&response_type=[type]&scope=%24%7BT%28java.lang.Runtime%29.getRuntime%28%29.exec%28%22calc%22%29%7D&redirect_uri=[uri]
 
-需要注意的是，/oauth/authorize和/oauth/confirm_access默认都有认证保护
+需要注意的是，/oauth/authorize和/oauth/confirm_access默认都有认证保护。
 
 ## 参考
 

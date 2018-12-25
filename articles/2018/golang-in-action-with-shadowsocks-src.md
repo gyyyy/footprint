@@ -116,7 +116,7 @@ ss.PipeThenClose(remote, conn, func(Traffic int) {
 
 #### 通信
 
-从缓冲区空闲列表获取或创建一个新的长度为4108的缓冲区 *（计算公式为`2(data.len) + 10(hmacsha1) + 4096(data)`）* ，
+从缓冲区空闲列表获取或创建一个新的长度为4108的缓冲区 *（计算公式为`2(data.len) + 10(hmacsha1) + 4096(data)`）* 。
 
 - 请求时
 
