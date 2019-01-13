@@ -14,6 +14,10 @@
 
 ## 足迹
 
+### [2019年](articles/2019/)
+
+- &lt;article month=01 day=14 title=&quot;[浅析Java序列化和反序列化](articles/2019/about-java-serialization-and-deserialization.md)&quot;/&gt;
+
 ### [2018年](articles/2018/)
 
 - &lt;article month=10 day=17 title=&quot;[定时任务管理Cron源代码浅析，Go语言实战](articles/2018/golang-in-action-with-cron-src.md)&quot;/&gt;
