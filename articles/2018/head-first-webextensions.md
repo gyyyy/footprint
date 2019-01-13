@@ -398,7 +398,7 @@ function getPostData(e) {
 
 `webRequest`API包含从请求发起到响应结束过程中所有阶段的事件，官方文档中对它流程的描述如下：
 
-![webrequest-flow.png](head-first-webextensions\webrequest-flow.png)
+![webrequest-flow.png](head-first-webextensions/webrequest-flow.png)
 
 官方文档中建议，当你需要修改请求响应数据时，可以在监听器中使用额外选项`blocking`，并监听以下事件：
 
