@@ -550,7 +550,7 @@ rt.exec(cmd);
 @java.lang.Runtime@getRuntime().exec(cmd)
 ```
 
-比如Spring的SpEL：
+又比如Spring的SpEL：
 
 ```java
 T(java.lang.Runtime).getRuntime().exec(cmd)
@@ -723,7 +723,7 @@ public Object invoke(Object proxy, Method method, Object[] args) {
 }
 ```
 
-所以，ysoserial使用Java动态代理的方式处理了`LazyMap`，使`readObject()`在调用`memberValues.entrySet()`时代理进入`invoke()`阶段，刚好方法名`entrySet`也可以顺利的跳过前面的几个判断条件，最终达到目的。
+所以，ysoserial使用Java动态代理的方式处理了`LazyMap`，使`readObject()`在调用`memberValues.entrySet()`时代理进入`AnnotationInvocationHandler.invoke()`阶段，刚好方法名`entrySet`也可以顺利的跳过前面的几个判断条件，最终达到目的。这也是为什么Payload中会包含两个`AnnotationInvocationHandler`的原因。
 
 ### 修复方案
 
