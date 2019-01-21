@@ -1,4 +1,4 @@
-# SQL和NoSQL注入浅析（下）
+# 浅析SQL和NoSQL注入（下）
 
 ![Category](https://img.shields.io/badge/category-security_research-blue.svg)
 ![Research](https://img.shields.io/badge/research-web_security-blue.svg)

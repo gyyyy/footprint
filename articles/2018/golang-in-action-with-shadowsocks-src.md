@@ -1,4 +1,4 @@
-# 正向代理之Shadowsocks源代码浅析，Go语言实战
+# 正向代理之Shadowsocks源代码分析，Go语言实战
 
 ![Category](https://img.shields.io/badge/category-security_develop-blue.svg)
 ![Research](https://img.shields.io/badge/research-web_security-blue.svg)
