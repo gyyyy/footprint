@@ -9,7 +9,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1517928817-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* [上回书说到](https://gyyyy.github.io/2017/11/23/sql-vs-nosql-injection-01/)，SQL注入（解析执行）过程涉及五个阶段，今天我们从这五个阶段继续对NoSQL注入进行分析。本文纯属个人扯淡，与技术无关。行文仓促，如有任何问题欢迎指正。</sub>
+<sub>* [上回书说到](https://github.com/gyyyy/footprint/blob/master/articles/2017/sql-vs-nosql-injection-01.md)，SQL注入（解析执行）过程涉及五个阶段，今天我们从这五个阶段继续对NoSQL注入进行分析。本文纯属个人扯淡，与技术无关。行文仓促，如有任何问题欢迎指正。</sub>
 
 ## 前面还有话
 
