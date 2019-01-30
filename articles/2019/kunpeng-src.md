@@ -20,7 +20,7 @@ plug, _ := plugin.Open("./kunpeng_go.so")
 g, _ := plug.Lookup("Greeter")
 ```
 
-由于`Plugin.Lookup()`获得的是一个`interface{}`类型对象，需要将其进行一次类型断言才能访问到`Greeter`对象内的公有属性。好在Go具有非侵入式接口的语言特性，使调用方在本地定义一个属于`Greeter`对象公共方法子集的接口就能断言成功：
+由于`Plugin.Lookup()`获得的是一个`interface{}`类型对象，需要将其进行一次类型断言才能访问到`Greeter`对象内的公有属性。好在Go具有非侵入式接口的语言特性，使调用方在本地定义一个属于`Greeter`对象公有方法子集的接口就能断言成功：
 
 ```go
 type Greeter interface {
@@ -58,7 +58,7 @@ task, _ := json.Marshal(Task{"service", "0.0.0.0:0000", "mysql", Meta{}})
 result := kunpeng.Check(string(task))
 ```
 
-被调用方的`Check()`在解码JSON字符串拿到`plugin.Task`对象 *（结构体与调用方定义的`Task`一致）* 后，直接交给`plugin.Scan()`去执行实际检测逻辑，拿到的结果又转成JSON字符串返回：
+被调用方的`Check()`在解析JSON字符串拿到`plugin.Task`对象 *（结构体与调用方定义的`Task`一致）* 后，直接交给`plugin.Scan()`去执行实际检测逻辑，拿到的结果又转成JSON字符串返回：
 
 ```go
 func Check(task *C.char) *C.char {
@@ -79,7 +79,7 @@ func Check(task *C.char) *C.char {
 }
 ```
 
-从上面的代码中可以看到，为了支持跨语言调用，KunPeng使用更底层的兼容性更高的CGo来处理几个入口函数中的原始数据类型。
+从上面的代码中可以看到，为了支持跨语言调用，KunPeng使用更底层兼容性更高的CGo来处理几个入口函数中的原始数据类型。
 
 `plugin.Scan()`分别遍历`GoPlugins`和`JSONPlugins` *（两种类型插件的具体区别见下面插件开发和插件加载章节）* ，根据`Task`的`Target`字段选择PoC子集进行检测并返回结果集合：
 
@@ -264,7 +264,7 @@ func init() {
 }
 ```
 
-`loadJSONPlugin()`遍历目录中的所有.json文件，交给`readPlugin()`进行处理。`readPlugin()`读取文件后将JSON字符串解码为`JSONPlugin`对象返回，所有非重复插件对象将以`target`为键全部放入`JSONPlugins`集合中，为了节省篇幅这里就不细述了。
+`loadJSONPlugin()`遍历目录中的所有.json文件，交给`readPlugin()`进行处理。`readPlugin()`读取文件后将JSON字符串解析为`JSONPlugin`对象返回，所有非重复插件对象将以`target`为键全部放入`JSONPlugins`集合中，为了节省篇幅这里就不细述了。
 
 ## 说在最后的话
 
