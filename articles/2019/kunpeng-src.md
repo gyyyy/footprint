@@ -151,7 +151,7 @@ type GoPlugin interface {
 }
 ```
 
-我们可以在`plugin/go/`目录下创建一个新的.go文件，在其中定义一个包含`info`和`result`字段的结构体来表示新的插件：
+由于KunPeng未定义插件的相关基类及缺省字段和方法，所以我们需要在`plugin/go/`目录下创建一个新的.go文件，在其中自定义一个包含`info`和`result`字段的结构体来表示新的插件：
 
 ```go
 type pluginXXX struct {
@@ -264,7 +264,11 @@ func init() {
 }
 ```
 
-`loadJSONPlugin()`遍历目录中的所有.json文件，交给`readPlugin()`进行处理。`readPlugin()`读取文件后将JSON字符串解析为`JSONPlugin`对象返回，所有非重复插件对象将以`target`为键全部放入`JSONPlugins`集合中，为了节省篇幅这里就不细述了。
+`loadJSONPlugin()`遍历目录中的所有.json文件，交给`readPlugin()`进行处理。`readPlugin()`读取文件后将JSON字符串解析为`JSONPlugin`对象返回，所有非重复插件对象将以`target`为键全部放入`JSONPlugins`集合中。
+
+而新开的Goroutine调用`loadExtraJSONPlugin()`，每隔20秒对配置的`extra_plugin_path`目录执行`loadJSONPlugin()`操作进行加载。
+
+为了节省篇幅这里就不细述了。
 
 ## 说在最后的话
 
