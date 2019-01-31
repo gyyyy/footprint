@@ -63,8 +63,7 @@ result := kunpeng.Check(string(task))
 ```go
 func Check(task *C.char) *C.char {
 	var m plugin.Task
-    err := json.Unmarshal([]byte(C.GoString(task)), &m)
-    if err != nil {
+    if err := json.Unmarshal([]byte(C.GoString(task)), &m); err != nil {
         return C.CString("[]")
 	}
 	result := plugin.Scan(m)
@@ -146,7 +145,7 @@ type Plugin struct {
 ```go
 type GoPlugin interface {
 	Init() Plugin
-	Check(netloc string, meta TaskMeta) bool
+	Check(string, TaskMeta) bool
 	GetResult() []Plugin
 }
 ```
