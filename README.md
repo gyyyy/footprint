@@ -16,6 +16,7 @@
 
 ### [2019年](articles/2019/)
 
+- &lt;article month=02 day=02 title=&quot;[Java XXE注入修复问题填坑实录](articles/2019/bug-of-fixing-java-xxe.md)&quot;/&gt;
 - &lt;article month=01 day=31 title=&quot;[带你读神器之KunPeng源代码分析](articles/2019/kunpeng-src.md)&quot;/&gt;
 - &lt;article month=01 day=14 title=&quot;[浅析Java序列化和反序列化](articles/2019/about-java-serialization-and-deserialization.md)&quot;/&gt;
 
