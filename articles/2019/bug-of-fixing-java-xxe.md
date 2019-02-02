@@ -45,7 +45,7 @@
 - 在`XMLDocumentFragmentScannerImpl.scanDocument()`时，调用`scanDoctypeDecl()`扫描DOCTYPE，之后交给`DTDDriver.next()`处理实体声明
 - 当进入`START_ELEMENT`阶段后，`startEntity()`会调用`scanEntityReference()`扫描并解析实体引用`&xxe;`，而在`endEntity()`判断`fCreateEntityRefNodes`为`false`时，将会移除掉该节点
 
-由此可知，`setExpandEntityReferences()`的意思其实是实体引用的值解析后，是否仍将其原始的表示引用的节点保留Dom树中。设置为`false`的不展开代表保留，则会创建一个对应节点存放在Dom树中。
+由此可知，`setExpandEntityReferences()`的意思其实是实体引用的值解析后，是否仍在Dom树中保留其原始的表示引用的节点。设置为`false`的不展开代表保留，则会创建一个对应节点存放在Dom树中。
 
 因此，如果是DTD扫描阶段的SSRF之类的攻击，无论`setExpandEntityReferences()`传入何值，都是不起任何防御作用的。
 
