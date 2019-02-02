@@ -45,11 +45,13 @@
 - 在`XMLDocumentFragmentScannerImpl.scanDocument()`时，调用`scanDoctypeDecl()`扫描DOCTYPE，之后交给`DTDDriver.next()`处理实体声明
 - 当进入`START_ELEMENT`阶段后，`startEntity()`会调用`scanEntityReference()`扫描并解析实体引用`&xxe;`，而在`endEntity()`判断`fCreateEntityRefNodes`为`false`时，将会移除掉该节点
 
+由此可知，`setExpandEntityReferences()`的意思其实是实体引用的值解析后，是否仍将其原始的表示引用的节点保留Dom树中。设置为`false`的不展开代表保留，则会创建一个对应节点存放在Dom树中。
+
 因此，如果是DTD扫描阶段的SSRF之类的攻击，无论`setExpandEntityReferences()`传入何值，都是不起任何防御作用的。
 
-有被误导过的同学赶紧更正一下吧。
+## 说在最后的话
 
-但是我还有一个疑问，为什么`setExpandEntityReferences(false)`反倒是能正常获取到`&xxe;`这个实体引用的值了？求大牛们指点。
+在和南哥一起填这个坑的时候，我们发现网络上还是有不少关于XXE攻防相关的文章的修复建议中只提到了`setExpandEntityReferences(false)`这个方案，有被Java官方误导过的同学都赶紧更正一下吧。
 
 ## 参考
 
