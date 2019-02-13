@@ -685,7 +685,7 @@ private void readObject(java.io.ObjectInputStream s)
 
 可以看到，在遍历`memberValues.entrySet()`时，会用键名在`memberTypes`中尝试获取一个`Class`，并判断它是否为`null`，这就是刚才说的需要满足的条件。接下来是网上很少提到过的一个结论：
 
-首先，`memberTypes`是`AnnotationType`的一个字段，里面存储着`Annotation`接口声明的方法信息 *（键名为方法名，值为方法返回类型）* 。因此，我们在获取`AnnotationInvocationHandler`实例时，需要传入一个方法个数大于0的`Annotation`子类 *（一般来说，若方法个数大于0，都会包含一个名为`value`的方法）* ，并且原始`Map`中必须存在任意以这些方法名为键名的元素，才能顺利进入`setValue()`的流程：
+首先，`memberTypes`是`AnnotationType`的一个字段，里面存储着`Annotation`接口声明的方法信息 *（键名为方法名，值为方法返回类型）* 。因此，我们在获取`AnnotationInvocationHandler`实例时，需要传入一个方法个数大于0的`Annotation`子类 *（一般来说，若方法个数大于0，都会包含一个名为`value`的方法）* ，并且原始`Map`中必须存在任意以这些方法名为键名的元素，且元素值不是该方法返回类型的实例，才能顺利进入`setValue()`的流程：
 
 ```java
 Class cls = Class.forName("sun.reflect.annotation.AnnotationInvocationHandler");
