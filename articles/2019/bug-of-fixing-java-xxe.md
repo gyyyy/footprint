@@ -11,7 +11,7 @@
 
 ## 关于`DocumentBuilderFactory`
 
-在我之前的[《XXE注入漏洞概述》](https://github.com/gyyyy/footprint/blob/master/articles/2018/xxe-injection-overview.md)一文中，以dom4j的`SAXParser`为例简单分析了它对XML文档的解析过程，虽然`DocumentBuilderFactory`使用的是`DOMParser`，但是很荣幸，它俩都会调用`XMLDocumentFragmentScannerImpl.scanDocument()`扫描XML文档。而且[OWASP XXE Prevention Cheat Sheet](https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet)项目中也表示它们的修复方案是一致的：
+在我之前的[《XXE注入漏洞概述》](../2018/xxe-injection-overview.md)一文中，以dom4j的`SAXParser`为例简单分析了它对XML文档的解析过程，虽然`DocumentBuilderFactory`使用的是`DOMParser`，但是很荣幸，它俩都会调用`XMLDocumentFragmentScannerImpl.scanDocument()`扫描XML文档。而且[OWASP XXE Prevention Cheat Sheet](https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet)项目中也表示它们的修复方案是一致的：
 
 > `DocumentBuilderFactory`, `SAXParserFactory` and `DOM4J` XML Parsers can be configured using the same techniques to protect them against XXE.
 

@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-5%25-brightgreen.svg)
 
-<sub>* 在[《浅析Java序列化和反序列化》](https://github.com/gyyyy/footprint/blob/master/articles/2019/about-java-serialization-and-deserialization.md)一文中说到，POP是反序列化的一门艺术。通过分析ysoserial项目，会发现很多POP链的构造非常的巧妙甚至是复杂。这不禁让我们好奇，究竟大牛们是如何找到这些千奇百怪的POP链的呢？幸运的是，ysoserial项目的贡献者[@mbechler](https://github.com/mbechler/)开源了他用于寻找Java反序列化Gadget的静态字节码分析工具，就让我们一起来观摩一下大牛的神操作吧。</sub>
+<sub>* 在之前的[《浅析Java序列化和反序列化》](../2019/about-java-serialization-and-deserialization.md)一文中说到，POP是反序列化的一门艺术。通过分析ysoserial项目，会发现很多POP链的构造非常的巧妙甚至是复杂。这不禁让我们好奇，究竟大牛们是如何找到这些千奇百怪的POP链的呢？幸运的是，ysoserial项目的贡献者[@mbechler](https://github.com/mbechler/)开源了他用于寻找Java反序列化Gadget的静态字节码分析工具，就让我们一起来观摩一下大牛的神操作吧。</sub>
 
 ## `Main.main()`
 

@@ -621,7 +621,7 @@ Transformer chain = new ChainedTransformer(trans);
 其中，数组的中间两个元素是最让人费解的，我们一句一句来解释 *（前方高能预警，请对照上面几个`Transformer`的逻辑仔细看，接下来的内容网上有些解释是存在出入的）* ：
 
 1. 构造一个`ConstantTransformer`，把`Runtime`的`Class`对象传进去，在`transform()`时，始终会返回这个对象
-1. 构造一个`InvokerTransformer`，待调用方法名为`getMethod`，参数为`getRuntime`，在`transform()`时，传入1的结果，此时的`input`应该是`java.lang.Runtime`，但经过`getClass()`之后，`cls`为`java.lang.Class`，之后`getMethod()`只能获取`java.lang.Class`的方法，因此才会定义的待调用方法名为`getMethod`，然后其参数才是`getRuntime`，它得到的是`getMethod`这个方法的`Method`对象，`invoke()`调用这个方法，最终得到的才是`getRuntime`这个方法的`Method`对象
+1. 构造一个`InvokerTransformer`，待调用方法名为`getMethod`，参数为`getRuntime`，在`transform()`时，传入1的结果，此时的`input`应该是`java.lang.Runtime`，但经过`getClass()`后，`cls`为`java.lang.Class`，之后的`getMethod()`只能获取`java.lang.Class`的方法，因此才会定义的待调用方法名为`getMethod`，然后其参数才是`getRuntime`，它得到的是`getMethod`这个方法的`Method`对象，`invoke()`调用这个方法，最终得到的才是`getRuntime`这个方法的`Method`对象
 1. 构造一个`InvokerTransformer`，待调用方法名为`invoke`，参数为空，在`transform()`时，传入2的结果，同理，`cls`将会是`java.lang.reflect.Method`，再获取并调用它的`invoke`方法，实际上是调用上面的`getRuntime()`拿到`Runtime`对象
 1. 构造一个`InvokerTransformer`，待调用方法名为`exec`，参数为命令字符串，在`transform()`时，传入3的结果，获取`java.lang.Runtime`的`exec`方法并传参调用
 1. 最后把它们组装成一个数组全部放进`ChainedTransformer`中，在`transform()`时，会将前一个元素的返回结果作为下一个的参数，刚好满足需求
