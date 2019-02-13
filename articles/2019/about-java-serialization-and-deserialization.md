@@ -870,7 +870,7 @@ POP已经成为反序列化区别于其他常规Web安全漏洞的一门特殊�
 1. 当依赖中不存在可以执行命令的方法时，可以选择使用`TemplatesImpl`作为命令执行载体，并想办法去触发它的`newTransformer`或`getOutputProperties`方法
 1. 可以作为入口的通用反序列化载体是`HashMap`、`AnnotationInvocationHandler`、`BadAttributeValueExpException`和`PriorityQueue`，它们都是依赖较少的JDK底层对象，区别如下：
     - `HashMap`，可以主动触发元素的`hashCode`和`equals`方法
-    - `AnnotationInvocationHandler`，可以主动触发`memberValues`字段的`entrySet`方法，本身也可以作为动态代理的Handler进入自己的`invoke`方法
+    - `AnnotationInvocationHandler`，可以主动触发`memberValues`字段的`setValue`方法，本身也可以作为动态代理的Handler拦截如`Map.entrySet`等方法进入自己的`invoke`方法
     - `BadAttributeValueExpException`，可以主动触发`val`字段的`toString`方法
     - `PriorityQueue`，可以主动触发`comparator`字段的`compare`方法
 
