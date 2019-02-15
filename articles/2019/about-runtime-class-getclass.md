@@ -41,7 +41,7 @@ Class clz = rt.getClass();
 在一般情况下，它俩的结果是可以相等的：
 
 ```java
-Object obj = new Object()
+Object obj = new Object();
 Object.class == obj.getClass();      // true
 Object.class.equals(obj.getClass()); // true
 ```
