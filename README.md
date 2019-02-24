@@ -12,16 +12,15 @@
 
 <br>
 
-## 足迹
+## [2019年](articles/2019/)
 
-### [2019年](articles/2019/)
-
+- &lt;article month=02 day=25 title=&quot;[带你学加密之WinACE中的CRC-32](articles/2019/crypto-winace-crc32.md)&quot;/&gt;
 - &lt;article month=02 day=14 title=&quot;[关于Java中Runtime.class.getClass()的细节分析](articles/2019/about-runtime-class-getclass.md)&quot;/&gt;
 - &lt;article month=02 day=02 title=&quot;[Java XXE注入修复问题填坑实录](articles/2019/bug-of-fixing-java-xxe.md)&quot;/&gt;
-- &lt;article month=01 day=31 title=&quot;[带你读神器之KunPeng源代码分析](articles/2019/kunpeng-src.md)&quot;/&gt;
+- &lt;article month=01 day=31 title=&quot;[带你读神器之PoC框架KunPeng](articles/2019/artifact-kunpeng.md)&quot;/&gt;
 - &lt;article month=01 day=14 title=&quot;[浅析Java序列化和反序列化](articles/2019/about-java-serialization-and-deserialization.md)&quot;/&gt;
 
-### [2018年](articles/2018/)
+## [2018年](articles/2018/)
 
 - &lt;article month=10 day=17 title=&quot;[定时任务管理Cron源代码分析，Go语言实战](articles/2018/golang-in-action-with-cron-src.md)&quot;/&gt;
 - &lt;article month=09 day=27 title=&quot;[正向代理之Shadowsocks源代码分析，Go语言实战](articles/2018/golang-in-action-with-shadowsocks-src.md)&quot;/&gt;
@@ -36,7 +35,7 @@
 - &lt;article month=05 day=09 title=&quot;[深入浅出WebExtensions](articles/2018/head-first-webextensions.md)&quot;/&gt;
 - &lt;article month=02 day=06 title=&quot;[浅析SQL和NoSQL注入（下）](articles/2018/sql-vs-nosql-injection-02.md)&quot;/&gt;
 
-### [2017年](articles/2017/)
+## [2017年](articles/2017/)
 
 - &lt;article month=12 day=21 title=&quot;[DNS解析器，深入浅出Go语言](articles/2017/head-first-golang-with-dns-parser.md)&quot;/&gt;
 - &lt;article month=11 day=23 title=&quot;[浅析SQL和NoSQL注入（上）](articles/2017/sql-vs-nosql-injection-01.md)&quot;/&gt;
