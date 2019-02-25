@@ -6,7 +6,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1551059960-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 几天前，WinRAR曝出一个存在了19年的安全漏洞，实验室的[@浮萍](http://fuping.site/)大佬在第一时间进行了复现分析，其中用一个非常巧妙的方法获取了修改后的CRC值，通过常规CRC-32算法 *（zip和gzip通用）* 计算后得到的值与它并不一致，这让我感到十分好奇。遗憾的是，在随后圈里刮起的分析预警风里，也没能发现一篇满足我好奇心的。算了，还是自己动手吧。</sub>
+<sub>* 几天前，WinRAR曝出一个存在了19年的安全漏洞，实验室的[@浮萍](http://fuping.site/)大佬在第一时间进行了复现分析，其中用一个非常巧妙的方法获取了修改后的CRC值。通过常规CRC-32算法 *（zip和gzip通用）* 计算后得到的值与它并不一致，这让我感到十分好奇。遗憾的是，在随后圈里刮起的分析预警风里，也没能发现一篇满足我好奇心的。算了，还是自己动手吧。</sub>
 
 ## CRC基础
 
@@ -104,6 +104,8 @@ sum := uint16((^crc32.ChecksumIEEE(b))&0xFFFF)
 ```
 
 其中，Go的`^`位运算符在一元运算中表示取反操作，与C的`~`相同。
+
+通过相关资料介绍，这类版本的CRC被称为CRC-32/JAMCRC。有些语言的原生类库或工具包中已经预置了，直接使用即可。
 
 最后，成功得到我们需要的`0x7941`。
 
