@@ -3,8 +3,8 @@
 ![Category](https://img.shields.io/badge/category-security_research-blue.svg)
 ![Research](https://img.shields.io/badge/research-cryptology-blue.svg)
 ![Tag](https://img.shields.io/badge/tag-crc32-green.svg)
-![Timestamp](https://img.shields.io/badge/timestamp-0000000000-lightgrey.svg)
-![Progress](https://img.shields.io/badge/progress-0%25-brightgreen.svg)
+![Timestamp](https://img.shields.io/badge/timestamp-1551059960-lightgrey.svg)
+![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
 <sub>* 几天前，WinRAR曝出一个存在了19年的安全漏洞，实验室的[@浮萍](http://fuping.site/)大佬在第一时间进行了复现分析，其中用一个非常巧妙的方法获取了修改后的CRC值，通过常规CRC-32算法 *（zip和gzip通用）* 计算后得到的值与它并不一致，这让我感到十分好奇。遗憾的是，在随后圈里刮起的分析预警风里，也没能发现一篇满足我好奇心的。算了，还是自己动手吧。</sub>
 
@@ -14,11 +14,13 @@ CRC，Cyclic Redundancy Check *（循环冗余校验）* ，是一个根据网�
 
 常见的CRC算法有CRC-8、CRC-12、CRC-16和CRC-32，及各种衍生版本，它们主要的不同在于校验码长度和几个决定运算结果的参数上。
 
+本文以CRC-32为主。
+
 ### 计算过程
 
-CRC的计算和校验过程还包括一些参数，以及几种不同的算法。
+CRC的计算和校验中除了上面提到的参数之外，还有几种不同的算法实现。这些概念理论较多篇幅较大，如果有必要再另写文章讨论细节，这里就暂时先跳过了。
 
-不过简单的说，就是通过生成多项式 *（见下面生成多项式章节）* 对原始数据进行模2除，所得余数即CRC校验码。校验方拿到原始数据和CRC校验码后，将CRC校验码补入原始数据之后组成待校验数据 *（该过程也可在发送数据之前完成）* ，再利用相同的生成多项式对待校验数据模2除，判断所得余数是否为0，是则表示与原始数据一致。
+不过简单的说，就是通过生成多项式 *（见下面生成多项式章节）* 对原始数据进行模2除，所得余数即CRC校验码。校验方拿到原始数据和CRC校验码，将CRC校验码补入原始数据之后组成待校验数据 *（该过程也可在发送数据之前完成）* ，再利用相同的生成多项式对待校验数据模2除，判断所得余数是否为0，是则表示与原始数据一致。
 
 其中，模2除与算术除的区别是，它使用异或运算代替减运算降低了运算处理的复杂度。
 
@@ -59,7 +61,7 @@ g(x)=x^32+x^26+x^23+x^22+x^16+x^12+x^11+x^10+x^8+x^7+x^5+x^4+x^2+x^1+1
 
 即表示它需要循环校验第1、2、4、5、7、8、10、11、12、16、22、23、26和32位置上的数据，对应代码为`100000100110000010001110110110111`共33位。按照CRC规范，最高位和最低位必须为`1`，简写省略最高位，因此16进制记作`0x04C11DB7`。
 
-该多项式的最高次幂为32，故CRC校验码长度也为32。
+该多项式的最高次幂为32，故CRC校验码长度为32位。
 
 在计算机中，常见的字节存储机制有Big-Endian和Little-Endian两种，俗称大端和小端。在IEEE 802.3标准中，TCP/IP的各层协议以及png、zip和gzip等格式的数据都以大端为主，即低位字节在前，也就是一个前后颠倒的顺序，如`0x1234`的大端表示为`34 12`。
 
