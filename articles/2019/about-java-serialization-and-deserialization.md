@@ -884,4 +884,4 @@ POP已经成为反序列化区别于其他常规Web安全漏洞的一门特殊�
 
 1. [JavaSE Document](https://docs.oracle.com/javase/8/docs/)
 1. [Java OpenJDK Source Code](http://hg.openjdk.java.net/)
-1. [Java OpenJDK Github Mirror](https://github.com/unofficial-openjdk/openjdk/)
+1. [Java OpenJDK GitHub Mirror](https://github.com/unofficial-openjdk/openjdk/)

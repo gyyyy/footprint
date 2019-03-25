@@ -8,7 +8,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1513831469-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 由于文章完成时间比较凑巧，首先，祝各位大佬圣诞快乐，元旦快乐，新年快乐！最近在写一个涉及DNS查询的小脚本时遇到个需求，需要指定DNS服务器获得域名的解析结果。由于近两年一直用Go作为主语言，借由这个场景，也刚好给小伙伴们普及一下Google爸爸创造的这门神奇的语言。Github上已经有很多大牛编写的完整成熟的DNS相关类库，大家感兴趣的可以去看看。</sub>
+<sub>* 由于文章完成时间比较凑巧，首先，祝各位大佬圣诞快乐，元旦快乐，新年快乐！最近在写一个涉及DNS查询的小脚本时遇到个需求，需要指定DNS服务器获得域名的解析结果。由于近两年一直用Go作为主语言，借由这个场景，也刚好给小伙伴们普及一下Google爸爸创造的这门神奇的语言。GitHub上已经有很多大牛编写的完整成熟的DNS相关类库，大家感兴趣的可以去看看。</sub>
 
 ## DNS协议
 

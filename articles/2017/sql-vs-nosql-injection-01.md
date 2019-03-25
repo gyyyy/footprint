@@ -45,7 +45,7 @@ SELECT * FROM table_A WHERE field_A=@USER_INPUT
 - 客户端协议实现（Driver层）
 - 客户端应用实现
 
-借用开源关系型数据库MySQL *（本文选择MySQL在Github上的默认branch 5.7版本，不同版本或其他语言驱动和数据库可能有区别）* ，我们来具体看一下上面那条最简单的SQL查询语句在各阶段的情况 *（服务器对于不同的Command指令也可能会有不同的处理方式，甚至一些其他的中间处理过程也会形成攻击面，这里以思路为主，不详细展开）* 。
+借用开源关系型数据库MySQL *（本文选择MySQL在GitHub上的默认branch 5.7版本，不同版本或其他语言驱动和数据库可能有区别）* ，我们来具体看一下上面那条最简单的SQL查询语句在各阶段的情况 *（服务器对于不同的Command指令也可能会有不同的处理方式，甚至一些其他的中间处理过程也会形成攻击面，这里以思路为主，不详细展开）* 。
 
 ### 客户端/服务器协议
 
@@ -110,7 +110,7 @@ rc= thd->get_protocol()->get_command(&com_data, &command);
 
 ### 客户端协议实现（Driver层）
 
-MySQL在Github上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个版本的官方Driver，本文选择大家熟悉的[MySQL Connector/J](https://github.com/mysql/mysql-connector-j/)进行分析。
+MySQL在GitHub上开源了C++、Java、.NET、Python、NodeJS，以及ODBC几个版本的官方Driver，本文选择大家熟悉的[MySQL Connector/J](https://github.com/mysql/mysql-connector-j/)进行分析。
 
 在Java应用中使用MySQL Connector可以在互联网上搜到大把的示例代码，这里我们就不再多说了，它的执行流程如下 *（其中带完整包名的为JDK内对象）* ：
 

@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1539756687-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 在信息整合、漏洞扫描等平台的开发过程中，经常会遇到定时任务执行的需求，如Windows的定时任务计划和Linux的crontab都是为了这类需求而产生的。本文对Github上一个Go版的cron包进行分析，带大家熟悉一下它的具体实现。</sub>
+<sub>* 在信息整合、漏洞扫描等平台的开发过程中，经常会遇到定时任务执行的需求，如Windows的定时任务计划和Linux的crontab都是为了这类需求而产生的。本文对GitHub上一个Go版的cron包进行分析，带大家熟悉一下它的具体实现。</sub>
 
 ## 初始化Cron对象
 
