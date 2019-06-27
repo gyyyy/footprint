@@ -14,6 +14,7 @@
 
 ## [2019年](articles/2019/)
 
+- &lt;article month=06 day=27 title=&quot;[带你学加密之Base64](articles/2019/crypto-base64.md)&quot;/&gt;
 - &lt;article month=03 day=25 title=&quot;[带你读神器之子域名监控工具Sublert](articles/2019/artifact-sublert.md)&quot;/&gt;
 - &lt;article month=02 day=25 title=&quot;[带你学加密之WinACE中的CRC-32](articles/2019/crypto-winace-crc32.md)&quot;/&gt;
 - &lt;article month=02 day=14 title=&quot;[关于Java中Runtime.class.getClass()的细节分析](articles/2019/about-runtime-class-getclass.md)&quot;/&gt;
