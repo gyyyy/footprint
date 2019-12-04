@@ -2,5 +2,8 @@
 articles/privacy/*$.md
 **/*.cfk
 
+# Drafts
+drafts/*
+
 # Other
 .DS_Store
