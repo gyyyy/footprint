@@ -1,4 +1,4 @@
-# 带你学加密之Base64
+# 带你学加密之RC4
 
 ![Category](https://img.shields.io/badge/category-security_research-blue.svg)
 ![Research](https://img.shields.io/badge/research-cryptology-blue.svg)
