@@ -96,7 +96,8 @@ for (var k = 0; k < data.length; k++) {
     tmp = S[i];
     S[i] = S[j];
     S[j] = tmp;
-    dst_data += String.fromCharCode(data.charCodeAt(k) ^ S[(S[i] + S[j]) % 256]);
+    c = data.charCodeAt(k) ^ S[(S[i]+S[j])%256];
+    dst_data += String.fromCharCode(c);
 }
 ```
 
@@ -123,7 +124,7 @@ for (var k = 0; k < data.length; k++) {
     i = 2
     j = (0 + 1) % 4 = 1
     S[i], S[j] = S[j], S[i] -> S = [0, 1, 2, 3]
-    c = data[k] ^ S[(S[i]+S[j])%4] = 121 ^ 3 = 122
+    c = 121 ^ 3 = 122
     ```
 - 第3轮循环
     ```plain
@@ -131,7 +132,7 @@ for (var k = 0; k < data.length; k++) {
     i = 3
     j = (1 + 3) % 4 = 0
     S[i], S[j] = S[j], S[i] -> S = [3, 1, 2, 0]
-    c = data[k] ^ S[(S[i]+S[j])%4] = 121 ^ 0 = 121
+    c = 121 ^ 0 = 121
     ```
 - 第4轮循环
     ```plain
@@ -139,7 +140,7 @@ for (var k = 0; k < data.length; k++) {
     i = 0
     j = (0 + 3) % 4 = 3
     S[i], S[j] = S[j], S[i] -> S = [0, 1, 2, 3]
-    c = data[k] ^ S[(S[i]+S[j])%4] = 121 ^ 3 = 122
+    c = 121 ^ 3 = 122
     ```
 - 第5轮循环
     ```plain
@@ -147,7 +148,7 @@ for (var k = 0; k < data.length; k++) {
     i = 1
     j = (3 + 1) % 4 = 0
     S[i], S[j] = S[j], S[i] -> S = [1, 0, 2, 3]
-    c = data[k] ^ S[(S[i]+S[j])%4] = 121 ^ 0 = 121
+    c = 121 ^ 0 = 121
     ```
 - 最终结果
     ```plain
