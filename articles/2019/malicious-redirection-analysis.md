@@ -61,7 +61,7 @@
 
 1. 将字符串拼接和函数调用等用函数表示，如`function(a, b){return a + b;}`和`function(a, b){return a(b);}`
 1. 用`while`嵌套`switch`打乱原始逻辑执行顺序
-1. 根据JavaScript的语言特性，将方法调用改为`[]()`形式，目的是尽量用字符串来表示方法名
+1. 根据JavaScript语言特性，将方法调用改为`[]()`形式，目的是尽量用字符串来表示方法名
 1. 把所有字符串加密放进一个数组中，用该数组对应索引的引用替换原始字符串，并偏移数组元素的原始位置
 1. 将数字全部转换成16进制表示，`true`用`!![]`表示
 1. 变量名无意义化
@@ -74,10 +74,10 @@
 var __0x62ce8 = [...];
 (function(_0x4b208f, _0x58ed6e) {
     var _0x35daa3 = function(_0x2fec43) {
-            while (--_0x2fec43) {
-                _0x4b208f['push'](_0x4b208f['shift']());
-            }
-        };
+        while (--_0x2fec43) {
+            _0x4b208f['push'](_0x4b208f['shift']());
+        }
+    };
     _0x35daa3(++_0x58ed6e);
 }(__0x62ce8, 0xfc));
 ```
@@ -262,7 +262,7 @@ document.body.removeChild(elem);
 
 ## 效果演示
 
-不得不说，这些黑帽的思路真骚，用户体验一流：
+不得不说，这些黑帽的思路真骚，用户体验一流。
 
 ![04.gif](malicious-redirection-analysis/04.gif)
 
