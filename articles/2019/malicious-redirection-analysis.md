@@ -14,11 +14,12 @@
 
 > 眼瞅着就要过年了，朋友圈里也刮起了一股总结和预测的风。
 >
-> 其中，有个叫『2020年会发生的几件事』的图片分享，传播范围横跨了我朋友圈中好几个行业，势头强劲 *（当然，现在已经玩脱了）* 。
+> 其中，有几个传播范围横跨了我朋友圈中好几个行业，势头强劲 *（当然，现在已经玩脱了）* 。
 >
-> 操作很简单，扫一扫二维码，点击预测，长按分享。大概长这样：
+> 操作很简单，扫一扫二维码，点击测试，长按分享。大概长这样：
 
 ![01.png](malicious-redirection-analysis/01.png)
+![02.png](malicious-redirection-analysis/02.png)
 
 > 尼玛全是工作，这要被领导看见了还能放过我？不行，必须返回重测一遍。
 >
@@ -44,7 +45,7 @@
 
 手机抓包，拿到跳转公众号文章前的一段HTML，其中包含两坨加了密的JavaScript脚本：
 
-![02.png](malicious-redirection-analysis/02.png)
+![03.png](malicious-redirection-analysis/03.png)
 
 游戏开始。
 
@@ -106,7 +107,7 @@ var _0x2f5f94 = {
 };
 ```
 
-然后是逻辑部分，它会调用上面这个对象中的属性，我们一并替换，得到个这玩意：
+然后是逻辑，它会调用上面这个对象中的属性，我们一并替换，得到个这玩意：
 
 ```js
 var _0x1453d2 = '5|0|4|3|2|1'.split('|'),
@@ -172,7 +173,7 @@ if (!ua || !plat) {
 
 既然要跳转，首先需要有跳转目标的URL。
 
-由于History不会重新加载，因此脚本通过`LocalStorage`机制进行存取。第一次访问是取不到值的，于是先要加载跳转目标：
+由于History不会重新加载，因此脚本通过`LocalStorage`机制进行存取。第一次访问是取不到值的，于是先要获取跳转目标：
 
 ```js
 function load() {
@@ -206,7 +207,7 @@ jump();
 
 ### 疯狂返回
 
-为了让用户能够一直停留在当前页面，脚本中利用URL中一个叫Hash *（不清楚的同学请百度）* 的东西，在每次执行当前页面脚本时，都把一个以上带不同Hash的URL压进去History：
+为了让用户能够一直停留在当前页面，脚本中利用URL一个叫Hash *（不清楚的同学请百度）* 的东西，在每次执行当前页面脚本时，都把一个以上带不同Hash的URL压进History：
 
 ```js
 function push() {
@@ -219,7 +220,7 @@ window.cururl = location.href;
 push();
 ```
 
-这样，当用户疯狂返回时，其实仍然在当前页面的URL中。再利用`window.onhashchange`事件触发跳转，跳转前补充一个被消耗掉的History：
+这样，当用户疯狂返回时，其实仍然在当前页面的URL中。再利用`window.onhashchange`事件触发跳转，并补充一个被消耗掉的History：
 
 ```js
 window.onhashchange = function () {
@@ -263,7 +264,7 @@ document.body.removeChild(elem);
 
 不得不说，这些黑帽的思路真骚，用户体验一流：
 
-![03.gif](malicious-redirection-analysis/03.gif)
+![04.gif](malicious-redirection-analysis/04.gif)
 
 ## 参考
 
