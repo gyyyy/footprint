@@ -7,7 +7,7 @@
 ![Timestamp](https://img.shields.io/badge/timestamp-1593449327-lightgrey.svg)
 ![Progress](https://img.shields.io/badge/progress-100%25-brightgreen.svg)
 
-<sub>* 好久没更新了，正当六一我还在愉快的过节时，[@余弦](https://evilcos.me/)大佬的团队就开源了他们的BadDNS，一个用Rust写的子域名探测工具。关于工具的设计思路和使用方法，可以直接去看它GitHub上的ReadMe，这里还是老规矩，带大家速读一遍源代码，</sub>
+<sub>* 好久没更新了，正当六一我还在愉快的过节时，[@余弦](https://evilcos.me/)大佬的团队就开源了他们的BadDNS，一个用Rust写的子域名探测工具。关于工具的设计思路和使用方法，可以直接去看它GitHub上的ReadMe，这里还是老规矩，带大家速读一遍源代码。</sub>
 
 本文以工具本身的代码逻辑为主，一些涉及到的Rust语言基础和特性可能会简单带一带 *（毕竟Rust不像Go目前已经在圈内逐渐流行开了）* ，但不会做过多的展开，感兴趣的小伙伴可以自行研究。
 
@@ -56,7 +56,7 @@ impl Dict {
 }
 ```
 
-可以看到Rust中有很多C++、Python、Go，甚至JavaScript *（毕竟它的爸爸来自Mozilla）* 的影子，是一门很有意思也很有个性的语言。
+可以看到Rust中有很多C++、Python、Go，甚至JavaScript *（毕竟它的爸爸来自Mozilla）* 的影子，是一门很有意思也很有个性的语言，有一定语言基础的同学上手应该难度不大。
 
 > Rust语言小贴士：
 >
@@ -125,9 +125,9 @@ wildcards_event(target.clone(), depth.clone().get_dict(), c.get_worker(), &mut w
 
 > Rust语言小贴士：
 >
-> 1. Rust在内存管理中设计了一个比较有意思的机制，叫『所有权』，为了避免`target`和`depth`变量在作为参数传递后所有权发生转移导致提前被释放，因此通过`clone()`复制一份来使用
+> 1. Rust在内存管理中设计了一个比较有意思的机制，叫『所有权』，为了避免`target`和`depth`变量在作为参数传递后所有权发生转移导致提前被释放，因此可以通过`clone()`复制一份来使用
 
-`wildcards_event()`中会创建一个数组，用`d6p4lfaojz.`以及`d6p4lfaojz.[深度字典].`来填充，作为检测泛解析的子域名集合备用：
+`wildcards_event()`中会创建一个数组，用`d6p4lfaojz.`以及`d6p4lfaojz.[深度字典元素].`来填充，作为检测泛解析的子域名集合备用：
 
 ```rust
 let mut w_depth =vec!["d6p4lfaojz.".to_string()];
@@ -172,7 +172,7 @@ init_wildcards.join().unwrap();
 
 > Rust语言小贴士：
 >
-> 1. `move`关键字可以在Rust多线程使用闭包时，强制闭包函数获得所有权，避免错误的使用变量等资源
+> 1. `move`关键字可以在Rust中使用闭包时，强制闭包函数获得所有权，避免错误的使用变量等资源
 >
 > 1. Rust的Channel默认是多发单收的，从它的库名`mpsc` *（Multi Producer Single Consumer）* 也能看出来，在迭代接收时，当所有发送者被释放，迭代也会自动结束，而不需要像Go中那样显示的进行`close()`
 
@@ -180,7 +180,7 @@ init_wildcards.join().unwrap();
 
 ## 域名探测
 
-项目将整个探测流程拆分成了五个部分：域名生成、查询、检查、结果处理、统计，分别由五个Channel相互连接进行数据交换 *（下文中我也会以这五个部分的名称来代表对应的Channel本身）* ：
+项目将整个探测流程拆分成了五个部分：域名生成、查询、检查、结果处理、统计，分别由五个Channel相互连接进行数据交换 *（下文中我也会以这五个名称来代表对应的Channel）* ：
 
 ```rust
 let (gen_send, gen_recv) = channel();
@@ -198,7 +198,9 @@ let gen_handler = gen_event(gen_recv, query_send, sub_dict.get_dict(), target, s
 
 头疼的小伙伴别着急，跟着我一起来捋一捋。
 
-先过一遍几个定义的枚举和结构体，大家心里留个印象。`QueueMessage`是『域名生成』、『查询』和『检查』用到的类型，`Statue`是『统计』用到的类型，`ResultsSubDomain`是『结果处理』用到的类型：
+先过一遍几个定义的枚举和结构体，大家心里留个印象。
+
+`QueueMessage`是『域名生成』、『查询』和『检查』用到的类型，`Statue`是『统计』用到的类型，`ResultsSubDomain`是『结果处理』用到的类型：
 
 ```rust
 pub enum QueueMessage {
@@ -287,7 +289,7 @@ fn joint_subdomain(domain: &str, sub: &str) -> String {
 }
 ```
 
-第二部分就开始迭代`gen_recv`接收消息，当收到消息类型为`QueueMessage::Gen`时，遍历子域名字典，先通过`supper()` *（它的逻辑与当前流程关联性不大，我们放后面再分析）* 判断当前内存占用量是否超过指定比例 *（由`-m`参数决定，默认为`50%`）* ，是则休眠两秒，否则与上面一样依次给『统计』和『查询』发送消息：
+第二部分就开始迭代`gen_recv`接收消息，当收到消息类型为`QueueMessage::Gen`时，遍历子域名字典，先通过`supper()` *（它的逻辑与当前流程关联性不大，放后面再讲）* 判断当前内存占用量是否超过指定比例 *（由`-m`参数决定，默认为`50%`）* ，是则休眠两秒，否则与上面一样依次给『统计』和『查询』发送消息：
 
 ```rust
 for q in gen_recv {
@@ -308,13 +310,15 @@ for q in gen_recv {
 }
 ```
 
-需要注意的是，上面的`gen_item()`传参中，域名和深度都来自于接收到的`GenItem`，可以想象，应该是有一股神秘力量给『域名生成』发送了一个`GenItem`，让它对其中的域名进行子域名探测。
+需要注意的是，上面的`gen_item()`传参中，域名和深度都来自于接收到的`GenItem`，可以想象，应该是有一股神秘力量给『域名生成』发送了一个`GenItem`，让它继续对其中的域名进行子域名探测。
 
 但是为了保证流程的逻辑性，我们还是继续看『查询』的接收方`subdomain_query_event()`，不出意外，它的代码逻辑同样也在一个单独的子线程中。
 
 由于『查询』工作量最大，考虑到性能问题，首先当然是创建一个线程池，然后开始迭代`query_recv`接收消息。
 
-当消息类型为`QueueMessage::Job`时，先给『统计』发送一个`Statue::Query`，然后调用`query_event()`得到结果集，将其放入一个`Item`封装成`QueueMessage::Job`发送给『检查』，最后再给『统计』发送一个`Statue::Checks`给代表查询成功：
+当消息类型为`QueueMessage::Job`时，调用线程池异步执行一个匿名函数。
+
+先给『统计』发送一个`Statue::Query`，然后调用`query_event()`得到结果集，将其放入一个`Item`包装成`QueueMessage::Job`发送给『检查』，最后再给『统计』发送一个`Statue::Checks`给代表查询成功：
 
 ```rust
 let subdomain = item.subdomain.to_owned();
@@ -358,9 +362,9 @@ pool.execute(move || {
 
 > Rust语言小贴士：
 >
-> 1. `drop()`是Rust的`Drop`特性中的唯一方法，从字面意思看就知道，是手动销毁当前变量，上述代码中可能是考虑到查询量会比较大，所以尽可能提前释放掉使用完的资源避免占用过多内存吧
+> 1. `drop()`是Rust的`Drop`特性中的唯一方法，从字面意思来看就知道，是手动销毁当前变量，上述代码中可能是考虑到查询量会比较大，所以尽可能提前释放掉使用完的资源避免占用过多内存
 
-`query_event()`就是简单的调用`query_main()`来查询`A`和`CNAME`记录 *（记得我们传入的TCP协议）* ：
+`query_event()`就是简单的调用`query_main()`来查询`A`和`CNAME`记录：
 
 ```rust
 pub fn query_event(subdomain: &str, collect: &mut Vec<String>, retry: usize, protocol: Protocol) {
@@ -376,7 +380,9 @@ pub fn query_event(subdomain: &str, collect: &mut Vec<String>, retry: usize, pro
 }
 ```
 
-`query_main()`实现了TCP和UDP两种协议的查询方式，但是项目中暂时没用到UDP，所以我们只看TCP的实现。非常直观的就是获取一个TCP连接，然后进行查询，将查询结果交给`query_response_handler()`解析成IP或域名放进结果集，如果查询失败，就休眠一小会再递归进行重试：
+`query_main()`实现了TCP和UDP两种协议的查询方式，但是项目中暂时没用到UDP，所以我们只看TCP的实现。
+
+非常直观的就是获取一个TCP连接，然后进行查询，将查询结果交给`query_response_handler()`解析成IP或域名放进结果集，如果查询失败，就休眠一小会再递归进行重试：
 
 ```rust
 let rt = match t {
@@ -402,7 +408,7 @@ match protocol {
 }
 ```
 
-跳到`tcp_connection()`发现它是通过`rand_tcp_dns_server()`随机选择一个DNS服务器地址 *（支持TCP的子集，共8个）* 进行连接的，如果连接失败就重新选择直到成功连上为止：
+跳到`tcp_connection()`发现它是通过`rand_tcp_dns_server()`随机选择一个公共DNS服务器地址 *（支持TCP的子集，共8个）* 进行连接的，如果连接失败就重新选择直到成功连上为止：
 
 ```rust
 fn tcp_connection() -> SyncClient<TcpClientConnection> {
@@ -426,9 +432,9 @@ fn rand_tcp_dns_server() -> SocketAddr {
 }
 ```
 
-接着就是『检查』的接收方`check_event()`了，仍然是个子线程，它的篇幅有点长，我们拆着说。
+接着就是『检查』的接收方`check_event()`了，仍然是个子线程，它的篇幅有点长，我们拆开来说。
 
-先是给『统计』发个`Statue::Check`，然后判断如果当前深度为`0`，即为主域名时，直接不需要任何理由的生成一个深度+1的`GenItem`封装成`QueueMessage::Gen`发给『域名生成』 *（之前的神秘力量被我们找到了）* ，让它继续产生子域名：
+先是给『统计』发个`Statue::Check`，然后判断如果当前深度为`0`，即为主域名时，直接不需要任何理由的生成一个深度+1的`GenItem`包装成`QueueMessage::Gen`发给『域名生成』，让它继续产生子域名 *（看来『检查』就是之前的神秘力量，被我们找到了）* ：
 
 ```rust
 match statistical_send.send(Statue::Check) {
@@ -490,9 +496,9 @@ if check_wildcards(&w, &collect) {
 }
 ```
 
-再来是『结果处理』的`write_event()`，这个不需要说太多了，就是子线程中打开结果文件 *（由`-o`参数决定，默认为`baddns-output.json`）* 不停的接收结果写进去。
+再来是『结果处理』的`write_event()`，这个不需要说太多了，就是子线程中打开结果输出文件 *（由`-o`参数决定，默认为`baddns-output.json`）* 不停的接收结果转换成JSON对象写进文件中 *（用的是第三方库`serde_json`）* 。
 
-不过比较有意思的是，它为了最终能够满足一个JSON数组的格式标准，会在文件开头和结尾手动拼接一个`[`和`]` *（JSON转换用的是第三方库`serde_json`）* ：
+不过比较有意思的是，它为了最终能够满足一个JSON数组的格式标准，会在文件开头和结尾手动拼接一个`[`和`{}]`：
 
 ```rust
 let mut file = match OpenOptions::new()
@@ -534,9 +540,9 @@ file.write_all(b"{}\n]").unwrap();
 
 我们来看看最后剩下的『统计』的`state_management()`，它在子线程中每接收到一个`Statue`，就递增对应变量的值 *（`Statue::Terminate`除外）* ，比较特殊的是`Statue::TargetCount`，除了递增还会重新计算域名探测总量。
 
-这里先简单的解释下这个`Statue::TargetCount`计数器的意义，它其实是用来统计『下一层深度探测次数』的。
+这里先简单解释下这个`Statue::TargetCount`计数器的意义，它其实是用来统计『下一层深度探测次数』的。
 
-其实我们可以理解为，每进行一次下一层深度探测，相当于在原目标列表的基础上多增加了一个目标。如原域名为`a.com`，探测到第一层子域名`b.a.com`时被判断为可以继续下一层深度探测，『域名生成』就会对`b.a.com`再次遍历子域名字典，也就相当于是增加了一个新的目标域名。
+其实我们可以理解为，每进行一次下一层深度探测，相当于在原目标列表的基础上多增加了一个目标。如初始目标域名为`a.com`，探测到第一层子域名`b.a.com`时被判断为可以继续下一层深度探测，『域名生成』就会对`b.a.com`再次遍历子域名字典，也就相当于是增加了一个新的目标域名。
 
 由此可知，域名探测总量计算公式如下：
 
@@ -575,7 +581,7 @@ fn supper(use_mem: f64, pid: u32) -> bool{
 }
 ```
 
-至于为啥要乘以`0.75`就不太清楚了，有可能是作者进行测试以后给出的一个校正值吧，如果有知道原因的小伙伴请在评论处告知，谢谢。
+至于为什么要乘以`0.75`就不太清楚了，有可能是作者进行测试以后给出的一个校正值，如果有知道原因的小伙伴请在评论处告知，谢谢。
 
 ## 说在最后的话
 
@@ -585,9 +591,9 @@ fn supper(use_mem: f64, pid: u32) -> bool{
 
 可以考虑在生成泛解析白名单阶段，顺便对公共DNS服务器集合进行一次筛选，提前剔除那些无法连接或质量较差的服务器。
 
-现在的开源工具太多了，我平时工具用的比较少，不太清楚大家的喜好，如果有自己觉得好用好玩的开源项目，欢迎在我们公众号留言，有我微信的小伙伴也可以私聊推荐给我，类型不限，语言不限。
+现在的开源工具太多了，我平时工具用的比较少，不太清楚大家的喜好，如果有觉得好用好玩的开源项目，欢迎在我们公众号留言，有我微信的小伙伴也可以私聊推荐给我，类型不限，语言不限。
 
-其他偏代码向的如漏洞分析、代码审计也行，主要照顾一些读写代码比较吃力的小伙伴，随缘。
+当然，其他偏代码向的如漏洞分析、代码审计也行，主要照顾一些读写代码相对比较吃力的小伙伴，随缘。
 
 ## 参考
 
