@@ -19,9 +19,7 @@
 
 ```rust
 let sub_dict = Dict::new(c.get_sub_dict_file());
-
 let depth = Dict::new(c.get_depth_dict_file());
-
 let target = init_target(c.get_target_file());
 ```
 
