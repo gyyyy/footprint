@@ -12,6 +12,10 @@
 
 <br>
 
+## [2020年](articles/2020/)
+
+- &lt;article month=06 day=30 title=&quot;[带你读神器之子域名探测工具BadDNS](articles/2020/artifact-baddns.md)&quot;/&gt;
+
 ## [2019年](articles/2019/)
 
 - &lt;article month=12 day=08 title=&quot;[一次恶意重定向分析](articles/2019/malicious-redirection-analysis.md)&quot;/&gt;
